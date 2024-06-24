@@ -33,7 +33,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-[Bb]uild/
 
 # Executables
 *.exe
