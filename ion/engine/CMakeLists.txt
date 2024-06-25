@@ -17,11 +17,9 @@ file(GLOB_RECURSE TARGET_SOURCE_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
 
-# TODO: change to source tree
-source_group("Header" FILES ${TARGET_HEADER_FILES})
-source_group("Source" FILES ${TARGET_SOURCE_FILES})
-
 set (TARGET_FILES ${TARGET_HEADER_FILES} ${TARGET_SOURCE_FILES})
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_FILES})
 
 add_executable(${TARGET_NAME})
 
