@@ -77,3 +77,10 @@ target_link_libraries(${TARGET_NAME}
 	PRIVATE ${DEPENDENCIES_LIBRARY}
 	PRIVATE ${UI_LIBRARY}
 )
+
+if (MSVC)
+
+	# Disable linker warning for glfw3's missing debug info
+	target_link_options(${TARGET_NAME} PRIVATE /IGNORE:4099)
+
+endif()
