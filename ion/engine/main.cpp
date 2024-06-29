@@ -1,7 +1,7 @@
 #include "core/Application.h"
 
 // For memory leaks
-// Must be after #includes for imgui compatibility
+// Must be after #includes for ImGui compatibility
 #define _CRTDBG_MAP_ALLOC
 #include<iostream>
 #include <crtdbg.h>
@@ -16,13 +16,15 @@ int main(void)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	{
-		Ion::Application application;
+		ion::Application application;
 
 		while (!glfwWindowShouldClose(application.GetWindowPtr()))
 		{
 			application.UpdateApplication();
 		}
 	}
+
+	std::cout << glGetError() << std::endl;
 
 	return 0;
 }
