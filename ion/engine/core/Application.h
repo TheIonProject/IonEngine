@@ -26,6 +26,8 @@ namespace ion
 		void InitApplication(void);
 		void InitImGui(void);
 
+		void UpdateViewport(void);
+
 		GLFWwindow* m_windowPtr;
 		int m_windowWidth;
 		int m_windowHeight;

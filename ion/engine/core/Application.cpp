@@ -104,6 +104,40 @@ void ion::Application::InitImGui(void)
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
+void ion::Application::UpdateViewport(void)
+{
+	// OpenGL editor window
+	ImGui::Begin("Editor View");
+
+	const float windowWidth = ImGui::GetContentRegionAvail().x;
+	const float windowHeight = ImGui::GetContentRegionAvail().y;
+
+	m_frameBuffer.RescaleFrameBuffer(windowWidth, windowHeight);
+	glViewport(0, 0, windowWidth, windowHeight);
+
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+
+	ImGui::GetWindowDrawList()->AddImage(
+		(void*) m_frameBuffer.GetFrameTexture(),
+		ImVec2(pos.x, pos.y),
+		ImVec2(pos.x + windowWidth, pos.y + windowHeight),
+		ImVec2(0, 1),
+		ImVec2(1, 0)
+	);
+
+	ImGui::End();
+
+	m_frameBuffer.Bind();
+
+	glUseProgram(g_shader);
+	glBindVertexArray(g_VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+	glUseProgram(0);
+
+	m_frameBuffer.UnBind();
+}
+
 void ion::Application::UpdateApplication(void)
 {
 	ImGui_ImplOpenGL3_NewFrame();
@@ -115,37 +149,9 @@ void ion::Application::UpdateApplication(void)
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
 
-	// OpenGL editor window
-	ImGui::Begin("Editor View");
-
-	const float window_width = ImGui::GetContentRegionAvail().x;
-	const float window_height = ImGui::GetContentRegionAvail().y;
-
-	m_frameBuffer.RescaleFrameBuffer(window_width, window_height);
-	glViewport(0, 0, window_width, window_height);
-
-	ImVec2 pos = ImGui::GetCursorScreenPos();
-
-	ImGui::GetWindowDrawList()->AddImage(
-		(void*) m_frameBuffer.GetFrameTexture(),
-		ImVec2(pos.x, pos.y),
-		ImVec2(pos.x + window_width, pos.y + window_height),
-		ImVec2(0, 1),
-		ImVec2(1, 0)
-	);
-
-	ImGui::End();
+	UpdateViewport();
+	
 	ImGui::Render();
-
-	m_frameBuffer.Bind();
-
-	glUseProgram(g_shader);
-	glBindVertexArray(g_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	m_frameBuffer.UnBind();
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
