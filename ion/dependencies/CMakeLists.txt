@@ -1,4 +1,19 @@
-# Dependencies CMake 
+#	 _____                               _
+#	|_   _|                             (_)
+#	  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+#	  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+#	 _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+#	 \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+#	                                __/ |
+#	                               |___/
+#
+#
+#	dependencies subfolder CMake file
+#
+#	DESCTIPTION: Configure third-party dependencies as static library
+#
+#
+#
 
 # Check minimum cmake version
 cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
