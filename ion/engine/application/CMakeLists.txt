@@ -1,4 +1,19 @@
-# Engine CMake
+#	 _____                               _
+#	|_   _|                             (_)
+#	  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+#	  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+#	 _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+#	 \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+#	                                __/ |
+#	                               |___/
+#
+#
+#	ion/engine/application subfolder CMake file
+#
+#	DESCTIPTION: Engine executable, gathering all previous modules together
+#
+
+
 
 # Cmake min version
 cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
@@ -17,20 +32,26 @@ file(GLOB_RECURSE TARGET_SOURCE_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
 
+
+# git and documentation files for easy access from VS solution
 file(GLOB TARGET_EXTRA_FILES
 	${CMAKE_SOURCE_DIR}/.gitignore
 	${CMAKE_SOURCE_DIR}/.gitattributes
 	${CMAKE_SOURCE_DIR}/*.md
 )
 
+
+# Shared files at the project's root
 file(GLOB COMMON_FILES
 	${CMAKE_SOURCE_DIR}/ion/*.hpp
 	${CMAKE_SOURCE_DIR}/ion/*.h
 	${CMAKE_SOURCE_DIR}/ion/CMakeLists.txt
 )
 
+
 set (TARGET_FILES ${TARGET_HEADER_FILES} ${TARGET_SOURCE_FILES})
 
+# VS filters
 source_group("Header" ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_HEADER_FILES})
 source_group("Source" ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_SOURCE_FILES})
 
@@ -40,14 +61,17 @@ source_group("Extra files" FILES ${TARGET_EXTRA_FILES})
 # Files shared by several modules
 source_group("Common" FILES ${COMMON_FILES})
 
+# Create final application exe
 add_executable(${TARGET_NAME})
 
+# Add all gathered files as sources for compilation and VS filters
 target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES} ${TARGET_EXTRA_FILES} ${COMMON_FILES})
 
 target_include_directories(${TARGET_NAME}
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# link against ALL previous libraries
 target_link_libraries(${TARGET_NAME}
 	PRIVATE mathlib
 	PRIVATE ${DEPENDENCIES_LIBRARY}
