@@ -67,5 +67,7 @@ tags
 # Persistent undo
 [._]*.un~
 
+# Notepad++ backup folders
+/**/nppBackup/
 
 # Source: https://github.com/github/gitignore/tree/main
