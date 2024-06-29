@@ -2,13 +2,16 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 
-namespace Ion
+#include "FrameBuffer.h"
+
+namespace ion
 {
-	class Application
+	static class Application
 	{
 	public:
 		Application(void);
@@ -19,17 +22,14 @@ namespace Ion
 		GLFWwindow*& GetWindowPtr(void);
 
 		void UpdateApplication(void);
-
-
 	private:
 		void InitApplication(void);
+		void InitImGui(void);
 
 		GLFWwindow* m_windowPtr;
-		unsigned int m_windowWidth;
-		unsigned int m_windowHeight;
-
+		int m_windowWidth;
+		int m_windowHeight;
+		FrameBuffer m_frameBuffer;
 	};
 
-	void FrameBufferCallback(GLFWwindow* windowPtr, int width, int height);
-	void ProcessInput(GLFWwindow* windowPtr);
 }
