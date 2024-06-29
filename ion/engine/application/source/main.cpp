@@ -1,4 +1,4 @@
-#include "core/Application.h"
+#include "Application.h"
 
 // For memory leaks
 // Must be after #includes for ImGui compatibility

@@ -7,7 +7,6 @@ get_filename_component(TARGET_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
 #set(TARGET_NAME "IonEngine")
 
-
 file(GLOB_RECURSE TARGET_HEADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/*.h
 	${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
@@ -27,17 +26,19 @@ file(GLOB TARGET_EXTRA_FILES
 file(GLOB COMMON_FILES
 	${CMAKE_SOURCE_DIR}/ion/*.hpp
 	${CMAKE_SOURCE_DIR}/ion/*.h
+	${CMAKE_SOURCE_DIR}/ion/CMakeLists.txt
 )
 
 set (TARGET_FILES ${TARGET_HEADER_FILES} ${TARGET_SOURCE_FILES})
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_FILES})
+source_group("Header" ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_HEADER_FILES})
+source_group("Source" ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_SOURCE_FILES})
 
 # Useful files at the solution's root
-source_group("extra files" FILES ${TARGET_EXTRA_FILES})
+source_group("Extra files" FILES ${TARGET_EXTRA_FILES})
 
 # Files shared by several modules
-source_group("common" FILES ${COMMON_FILES})
+source_group("Common" FILES ${COMMON_FILES})
 
 add_executable(${TARGET_NAME})
 
@@ -48,6 +49,7 @@ target_include_directories(${TARGET_NAME}
 )
 
 target_link_libraries(${TARGET_NAME}
-	PRIVATE ${DEPENDENCIES_LIBRARY}
 	PRIVATE mathlib
+	PRIVATE ${DEPENDENCIES_LIBRARY}
+	PRIVATE ${UI_LIBRARY}
 )

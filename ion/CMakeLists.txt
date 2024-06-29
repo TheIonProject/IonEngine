@@ -20,7 +20,3 @@ FetchContent_MakeAvailable(mathlib)
 
 add_subdirectory(dependencies)
 add_subdirectory(engine)
-
-if (MSVC)
-	set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
-endif()
