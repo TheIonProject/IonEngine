@@ -1,4 +1,8 @@
+#include <filesystem>
+
 #include "Application.h"
+
+#include "IonDebug.hpp"
 
 // For memory leaks
 // Must be after #includes for ImGui compatibility
@@ -16,6 +20,8 @@ int main(void)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	{
+		ION_SETUP_LOGS();
+
 		ion::Application application;
 
 		while (!glfwWindowShouldClose(application.GetWindowPtr()))
