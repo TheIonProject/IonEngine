@@ -6,6 +6,7 @@
 #include <imgui/imgui_impl_glfw.h>
 
 #include "Application.h"
+#include "TitleBar.h"
 #include "Testing.h"
 
 ion::Application::Application(void)
@@ -149,6 +150,7 @@ void ion::Application::UpdateApplication(void)
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
 
+	MainMenuBar();
 	UpdateViewport();
 	
 	ImGui::Render();
