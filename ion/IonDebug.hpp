@@ -45,11 +45,10 @@ ION_DISABLE_WARNING(ION_VALUE_TRUNCATION)
 
 ION_POP_WARNINGS()
 
+#include <filesystem>
 #include <string>
-
-#else
-
 #include <iostream>
+#include <fstream>
 
 #endif // Win32
 
@@ -64,13 +63,10 @@ namespace internal
 
         // Create a popup window on windows
 
-        std::string   errorMessage("Assertion failed!\r\nIn file: ");
+        std::stringstream   errorMessage("Assertion failed!\r\nIn file: ");
 
-        errorMessage += _file;
-        errorMessage += "\r\nOn line: ";
-        errorMessage += std::to_string(_line);
-        errorMessage += "\r\nThe following assertion failed:\r\n\r\n";
-        errorMessage += _exprString;
+        errorMessage << _file << "\r\nOn line: " << _line <<
+        "\r\nThe following assertion failed:\r\n\r\n" << _exprString;
 
 
         int boxStatus = MessageBox
@@ -79,7 +75,7 @@ namespace internal
             NULL,
 
             // Popup message
-            errorMessage.c_str(),
+            errorMessage.str().c_str(),
 
             // Popup title
             "Ion Engine error",
@@ -104,6 +100,24 @@ namespace internal
 
 #endif // WIN32
     }
+
+
+
+
+    inline void Log(bool _error, const char* _file, uint32_t _line, const std::string& _message)
+    {
+        // Open log file
+        std::ofstream   logFile("logs/logs.txt", std::ios::app | std::ios::binary);
+
+        // Write message as message or error
+        logFile << (_error ? "[ERROR] " : "[MESSAGE] ") <<  _message << '\n' <<
+        "File: " << _file << ":" << _line << "\n\n";
+
+    }
+
+
+
+
 }
 
 #if !defined(NDEBUG)
@@ -111,15 +125,39 @@ namespace internal
 // Compiling in debug mode
 
 #define ION_ASSERT(_expression)\
-internal::Assert(static_cast<bool>(_expression), __FILE__, __LINE__, #_expression);
+internal::Assert(static_cast<bool>(_expression), __FILE__, __LINE__, #_expression)
+
+
+
+#define ION_LOG(_message)\
+internal::Log(false, __FILE__, __LINE__, _message)
+
+#define ION_LOG_ERROR(_message)\
+internal::Log(true, __FILE__, __LINE__, _message)
+
+
+#define ION_CLEAR_LOGS()\
+std::ofstream ofs("logs/logs.txt", std::ios::out | std::ios::trunc); (void) ofs
+
+
+#define ION_SETUP_LOGS()\
+if (!std::filesystem::exists("logs")) std::filesystem::create_directory("logs"); ION_CLEAR_LOGS()
+
 
 
 #else // NDEBUG
 
 // Compiling in release mode
 
-// Disable assert in release
+// Disable assert and check in release
+
 #define ION_ASSERT(expression)
+#define ION_CHECK(_expression)
+
+// Disable logging in release
+
+#define ION_LOG(_message)
+#define ION_LOG_ERROR(_message)
 
 # endif // !NDEBUG
 
