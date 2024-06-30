@@ -1,26 +1,41 @@
-# Cmake min version
-cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
+#	 _____                               _
+#	|_   _|                             (_)
+#	  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+#	  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+#	 _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+#	 \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+#	                                __/ |
+#	                               |___/
+#
+#
+#	ion subfolder CMake file
+#
+#	DESCTIPTION: IonEngine/ion subfolder, fetches and configures dependencies
+#				 before configuring engine project
+#
+#
+#
 
+
+# FetchContent is supported by CMake 3.24 and up
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
 
 include(FetchContent)
 
 FetchContent_Declare(
 	mathlib
-	GIT_REPOSITORY			https://github.com/TheIonProject/mathlib.git
-	GIT_TAG					ion
-	GIT_SHALLOW				ON
+	GIT_REPOSITORY			https://github.com/TheIonProject/mathlib.git		# Fetch our math library from github
+	GIT_TAG					ion													# Get 'ion' branch specifically
+	GIT_SHALLOW				ON													# Allow branch names as GIT_TAG argument
 )
 
 
-
+# Ensure mathlib is populated
 FetchContent_MakeAvailable(mathlib)
 
-
-
+# Configure engine third-party dependencies
 add_subdirectory(dependencies)
-add_subdirectory(engine)
 
-if (MSVC)
-	set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
-endif()
+# Begin configuring engine
+add_subdirectory(engine)
