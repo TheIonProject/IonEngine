@@ -10,7 +10,7 @@
                                |___/
 
 
-NAME: IonWarnings.hpp
+NAME: IonCompiler.hpp
 
 DESCTIPTION: Macros to facilitate compiler-specific operations for both MSVC and GCC
 
