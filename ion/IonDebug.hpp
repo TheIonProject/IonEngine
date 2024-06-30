@@ -117,6 +117,20 @@ namespace internal
 
 
 
+    inline bool Check(bool _expression, const char* _file, uint32_t _line, const char* _exprString)
+    {
+        if (_expression)
+            return true;
+
+        std::stringstream   logMsg;
+
+        // Log failed check as error
+        logMsg << "Check failed!\n" << _exprString;
+
+        Log(true, _file, _line, logMsg.str());
+        return false;
+
+    }
 
 }
 
@@ -127,6 +141,8 @@ namespace internal
 #define ION_ASSERT(_expression)\
 internal::Assert(static_cast<bool>(_expression), __FILE__, __LINE__, #_expression)
 
+#define ION_CHECK(_expression)\
+internal::Check(static_cast<bool>(_expression), __FILE__, __LINE__, #_expression)
 
 
 #define ION_LOG(_message)\
