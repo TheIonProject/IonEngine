@@ -65,7 +65,7 @@ void add_shader(GLuint program, const char* shader_code, GLenum type)
 	GLuint current_shader = glCreateShader(type);
 
 	const GLchar* code = shader_code;
-	GLint code_length = strlen(shader_code);
+	GLint code_length = static_cast<GLint>(strlen(shader_code));
 
 	glShaderSource(current_shader, 1, &code, &code_length);
 	glCompileShader(current_shader);
@@ -77,7 +77,7 @@ void add_shader(GLuint program, const char* shader_code, GLenum type)
 	if (!result)
 	{
 		glGetShaderInfoLog(current_shader, sizeof(log), NULL, log);
-		std::printf("Error compiling %s shader: %s\n", type, log);
+		std::printf("Error compiling %d shader: %s\n", type, log);
 		return;
 	}
 

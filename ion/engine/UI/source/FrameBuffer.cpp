@@ -41,7 +41,7 @@ unsigned int ion::FrameBuffer::GetFrameBuffer(void) const noexcept
 	return m_fbo;
 }
 
-void ion::FrameBuffer::RescaleFrameBuffer(float width, float height)
+void ion::FrameBuffer::RescaleFrameBuffer(GLsizei width, GLsizei height)
 {
 	BindTexture(width, height);
 
@@ -60,7 +60,7 @@ void ion::FrameBuffer::UnBind(void) const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ion::FrameBuffer::BindTexture(float width, float height)
+void ion::FrameBuffer::BindTexture(GLsizei width, GLsizei height)
 {
 	// Function to avoid redundancy for frame buffer code
 	glBindTexture(GL_TEXTURE_2D, m_texture);

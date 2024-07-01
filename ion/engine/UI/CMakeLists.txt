@@ -55,3 +55,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE ${DEPENDENCIES_LIBRARY})
 
 # Expose lib name for later linking
 set(UI_LIBRARY ${TARGET_NAME} PARENT_SCOPE)
+
+if (MSVC)
+	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
+endif()

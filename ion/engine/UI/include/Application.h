@@ -11,7 +11,7 @@
 
 namespace ion
 {
-	static class Application
+	class Application
 	{
 	public:
 		Application(void);

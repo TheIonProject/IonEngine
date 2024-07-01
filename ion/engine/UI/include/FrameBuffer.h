@@ -13,12 +13,12 @@ namespace ion
 
 		unsigned int GetFrameTexture(void) const noexcept;
 		unsigned int GetFrameBuffer(void) const noexcept;
-		void RescaleFrameBuffer(float width, float height);
+		void RescaleFrameBuffer(GLsizei width, GLsizei height);
 
 		void Bind(void) const;
 		void UnBind(void) const;
 	private:
-		void BindTexture(float width, float height);
+		void BindTexture(GLsizei width, GLsizei height);
 
 		GLuint m_fbo = 0;
 		GLuint m_texture = 0;

@@ -4,7 +4,11 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 
-void UITheme(void)
+namespace ion
 {
-	// TODO: add theme
+
+	void UITheme(void)
+	{
+		// TODO: add theme
+	}
 }

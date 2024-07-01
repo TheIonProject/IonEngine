@@ -110,16 +110,17 @@ void ion::Application::UpdateViewport(void)
 	// OpenGL editor window
 	ImGui::Begin("Editor View");
 
-	const float windowWidth = ImGui::GetContentRegionAvail().x;
-	const float windowHeight = ImGui::GetContentRegionAvail().y;
+	const GLsizei windowWidth = static_cast<GLsizei>(ImGui::GetContentRegionAvail().x);
+	const GLsizei windowHeight = static_cast<GLsizei>(ImGui::GetContentRegionAvail().y);
 
 	m_frameBuffer.RescaleFrameBuffer(windowWidth, windowHeight);
 	glViewport(0, 0, windowWidth, windowHeight);
 
 	ImVec2 pos = ImGui::GetCursorScreenPos();
-
+	
 	ImGui::GetWindowDrawList()->AddImage(
-		(void*) m_frameBuffer.GetFrameTexture(),
+		/*(GLvoid*) m_frameBuffer.GetFrameTexture()*/
+		(void*) static_cast<uint64_t>(m_frameBuffer.GetFrameBuffer()),
 		ImVec2(pos.x, pos.y),
 		ImVec2(pos.x + windowWidth, pos.y + windowHeight),
 		ImVec2(0, 1),
@@ -152,6 +153,7 @@ void ion::Application::UpdateApplication(void)
 
 	MainMenuBar();
 	UpdateViewport();
+	ImGui::ShowMetricsWindow();
 	
 	ImGui::Render();
 
