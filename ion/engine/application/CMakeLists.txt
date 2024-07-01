@@ -69,6 +69,7 @@ target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES} ${TARGET_EXTRA_FILES} ${CO
 
 target_include_directories(${TARGET_NAME}
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PRIVATE ${CMAKE_SOURCE_DIR}/ion
 )
 
 # link against ALL previous libraries
@@ -76,6 +77,7 @@ target_link_libraries(${TARGET_NAME}
 	PRIVATE mathlib
 	PRIVATE ${DEPENDENCIES_LIBRARY}
 	PRIVATE ${UI_LIBRARY}
+	PRIVATE ${RENDERER_LIBRARY}
 )
 
 if (MSVC)
