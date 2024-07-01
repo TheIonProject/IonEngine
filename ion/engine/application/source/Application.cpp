@@ -77,6 +77,7 @@ void ion::Application::InitApplication(void)
 	create_triangle(); // Testing triangle
 	create_shaders(); // Test shader
 
+
 	// Initialize frame buffer
 	m_frameBuffer.InitFrameBuffer();
 
