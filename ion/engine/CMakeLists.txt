@@ -26,6 +26,9 @@ get_filename_component(TARGET_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 # Windowing and user interface
 add_subdirectory(UI)
 
+# In-game renderer 
+add_subdirectory(renderer)
+
 # Main executable
 add_subdirectory(application)
 
