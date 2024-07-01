@@ -59,3 +59,7 @@ target_link_libraries(${TARGET_NAME}
 
 # Expose lib name for later linking
 set(RENDERER_LIBRARY ${TARGET_NAME} PARENT_SCOPE)
+
+if (MSVC)
+	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
+endif()
