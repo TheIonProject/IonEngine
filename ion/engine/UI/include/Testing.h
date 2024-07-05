@@ -11,11 +11,11 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-GLuint g_VAO;
-GLuint g_VBO;
-GLuint g_shader;
+inline GLuint g_VAO;
+inline GLuint g_VBO;
+inline GLuint g_shader;
 
-const char* vertex_shader_code = R"*(
+inline const char* vertex_shader_code = R"*(
 	#version 450
 	
 	layout (location = 0) in vec3 pos;
@@ -26,7 +26,7 @@ const char* vertex_shader_code = R"*(
 	}
 )*";
 
-const char* fragment_shader_code = R"*(
+inline const char* fragment_shader_code = R"*(
 	#version 450
 	
 	out vec4 color;
@@ -38,7 +38,7 @@ const char* fragment_shader_code = R"*(
 )*";
 
 
-void create_triangle()
+inline void create_triangle()
 {
 	GLfloat vertices[] = {
 		-1.0f, -1.0f, 0.0f,
@@ -60,7 +60,7 @@ void create_triangle()
 	glBindVertexArray(0);
 }
 
-void add_shader(GLuint program, const char* shader_code, GLenum type)
+inline void add_shader(GLuint program, const char* shader_code, GLenum type)
 {
 	GLuint current_shader = glCreateShader(type);
 
@@ -84,7 +84,7 @@ void add_shader(GLuint program, const char* shader_code, GLenum type)
 	glAttachShader(program, current_shader);
 }
 
-void create_shaders()
+inline void create_shaders()
 {
 	g_shader = glCreateProgram();
 	if (!g_shader)
