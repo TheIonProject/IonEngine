@@ -7,7 +7,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 
-#include "FrameBuffer.h"
+#include "Viewport.h"
 
 namespace ion
 {
@@ -26,12 +26,11 @@ namespace ion
 		void InitApplication(void);
 		void InitImGui(void);
 
-		void UpdateViewport(void);
-
 		GLFWwindow* m_windowPtr;
+		FrameBuffer m_frameBuffer;
+		Viewport m_viewport;
 		int m_windowWidth;
 		int m_windowHeight;
-		FrameBuffer m_frameBuffer;
 	};
 
 }
