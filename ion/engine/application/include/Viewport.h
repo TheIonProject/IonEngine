@@ -27,11 +27,13 @@ namespace ion
 		void SetViewportSize(void);
 		void ViewportPosition(void);
 		void OptionBarUI(void);
+		void CustomAspectModal(int const originalWidth, int const originalHeight);
 
 		ImVec2 m_position;
+		ViewportMode m_prevMode;
 		ViewportMode m_currentMode;
-		float m_width;
-		float m_height;
-
+		int m_width;
+		int m_height;
+		bool m_isOpened;
 	};
 }

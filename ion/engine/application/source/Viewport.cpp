@@ -11,21 +11,28 @@
 #include "Viewport.h"
 #include "Testing.h"
 
+#define DEBUG_VIEWPORT 1
+
 
 ion::Viewport::Viewport(void)
 {
 	m_currentMode = ViewportMode::FILL_WINDOW;
-	m_width = 0.0f;
-	m_height = 0.0f;
+	m_prevMode = m_currentMode;
+	m_width = 0;
+	m_height = 0;
 	m_position = ImVec2(0.0f, 0.0f);
+	m_isOpened = false;
 }
 
 ion::Viewport::Viewport(ViewportMode const viewportMode)
 {
 	m_currentMode = viewportMode;
-	m_width = 0.0f;
-	m_height = 0.0f;
+	m_prevMode = m_currentMode;
+	m_width = 0;
+	m_height = 0;
 	m_position = ImVec2(0.0f, 0.0f);
+	
+	m_isOpened = (viewportMode == ViewportMode::CUSTOM_RATIO);
 }
 
 ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
@@ -40,7 +47,6 @@ void ion::Viewport::SetViewportMode(ViewportMode const viewportMode)
 
 void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
 {
-	//bool* e = nullptr;
 	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar /*| ImGuiWindowFlags_NoCollapse*/);
 
 	ImVec2 regionSize = ImGui::GetContentRegionAvail();
@@ -63,12 +69,10 @@ void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
 	ImGui::GetWindowDrawList()->AddImage(
 		(void*) static_cast<uint64_t>(frameBuffer.GetFrameBuffer()),
 		ImVec2(m_position.x, m_position.y),
-		ImVec2(m_position.x + m_width, m_position.y + m_height),
+		ImVec2(m_position.x + (float) m_width, m_position.y + (float) m_height),
 		ImVec2(0, 1),
 		ImVec2(1, 0)
 	);
-
-
 
 	ImGui::End();
 
@@ -89,23 +93,21 @@ void ion::Viewport::SetViewportSize(void)
 	constexpr float hdAspectRatio = 0.5625f;
 	ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
-	// TODO: add custom input for width & height
-	const float windowWidth = 500.0f;
-	const float windowHeight = 500.0f;
+	const int originalWidth = m_width;
+	const int originalHeight = m_height;
 
 	switch (m_currentMode)
 	{
 	case ViewportMode::HD_RATIO:
-		m_width = windowSize.x;
-		m_height = m_width * hdAspectRatio;
+		m_width = (int) windowSize.x;
+		m_height = (int) ((float) m_width * hdAspectRatio);
 		break;
 	case ViewportMode::FILL_WINDOW:
-		m_width = windowSize.x;
-		m_height = windowSize.y;
+		m_width = (int) windowSize.x;
+		m_height = (int) windowSize.y;
 		break;
 	case ViewportMode::CUSTOM_RATIO:
-		m_width = windowWidth;
-		m_height = windowHeight;
+		CustomAspectModal(originalWidth, originalHeight);
 		break;
 	default:
 		throw std::exception("Invalid viewport mode");
@@ -128,7 +130,7 @@ void ion::Viewport::OptionBarUI(void)
 	{
 		"Free aspect",
 		"16:9 HD",
-		"Custom (WIP)"
+		"Custom aspect"
 	};
 
 	constexpr int arraySize = IM_ARRAYSIZE(options);
@@ -145,17 +147,90 @@ void ion::Viewport::OptionBarUI(void)
 
 				if (ImGui::Selectable(options[i], isSelected))
 				{
+#if DEBUG_VIEWPORT == 1
+					std::printf("%s\n", options[i]);
+#endif
+					m_prevMode = static_cast<ViewportMode>(m_currentMode);
 					currentOption = options[i];
 					m_currentMode = static_cast<ViewportMode>(i);
+					
+					m_isOpened = (currentOption == options[2]);
 				}
 
 				if (isSelected)
+				{
 					ImGui::SetItemDefaultFocus();
+				}				
 			}
 
 			ImGui::EndCombo();
 		}
 
 		ImGui::EndMenuBar();
+	}
+}
+
+void ion::Viewport::CustomAspectModal(int const originalWidth, int const originalHeight)
+{
+	if (!m_isOpened)
+		return;
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImVec2 pos(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(pos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoDecoration
+		| ImGuiWindowFlags_AlwaysAutoResize
+		| ImGuiWindowFlags_NoSavedSettings
+		| ImGuiWindowFlags_NoDocking;
+
+	constexpr int minIncrement = 1;
+	constexpr int maxIncrement = 10;
+	
+	if (ImGui::Begin("Custom Aspect Ratio", nullptr, flags))
+	{
+		// Title text
+		ImGui::Text("Set viewport size (in pixels)");
+		
+		// Formating
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// Input fields
+		if (ImGui::InputInt("Width", &m_width, minIncrement, maxIncrement)) {}
+		ImGui::Spacing();
+		if (ImGui::InputInt("Height", &m_height, minIncrement, maxIncrement)) {}
+		ImGui::Spacing();
+		
+#if DEBUG_VIEWPORT == 1
+			std::printf("original size: (%d, %d)\nNew size: (%d, %d)", originalWidth, originalHeight, m_width, m_height);
+#endif
+#ifdef WIP_CANCEL_BUTTON
+		// Cancel button
+		if (ImGui::Button("Cancel", ImVec2(150, 0)))
+		{
+			// Reset screen size
+			m_width = originalWidth;
+			m_height = originalHeight;
+
+			// Close popup
+			m_isOpened = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+#else
+			(void) originalWidth;
+			(void) originalHeight;
+#endif
+		// Confirm button
+		if (ImGui::Button("Confirm", ImVec2(200, 0)))
+		{
+			// Close popup
+			m_isOpened = false;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::End();
 	}
 }
