@@ -22,8 +22,6 @@ AUTHOR: Noah de Pischof | @torrra on GitHub
 
 #pragma once
 
-#include <type_traits>
-
 #include "glad/glad.h"
 
 #define ION_VERTEX_BUFFER           GL_ARRAY_BUFFER
@@ -32,7 +30,8 @@ AUTHOR: Noah de Pischof | @torrra on GitHub
 namespace ion
 {
 
-    template <GLenum TBufferEnum>
+    template <GLenum TBufferEnum> requires
+    (TBufferEnum == ION_VERTEX_BUFFER || TBufferEnum == ION_INDEX_BUFFER)
     class Buffer
     {
 
