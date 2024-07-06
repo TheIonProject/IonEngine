@@ -101,7 +101,7 @@ namespace ion
 		}
 	}
 
-	void Model::Importer::FaceState(std::string&, std::stringstream& objBuffer)
+	void Model::Importer::FaceState(std::string& line, std::stringstream& objBuffer)
 	{
 		size_t						vertexCount = 0;
 		std::vector<int32_t>		vertexIndices;
@@ -115,36 +115,36 @@ namespace ion
 		{
 			if (m_uniqueVertices.contains(indexStrings.back().c_str()))
 			{
-				int32_t		existingIndex = m_uniqueVertices[indexStrings.back().c_str()];
+				int32_t		existingIndex = m_uniqueVertices[indexStrings.back()];
 
 				vertexIndices.push_back(existingIndex);
 
 				indexStrings.resize(indexStrings.size() + 1);
 
-				objBuffer >> indexStrings.back();
-
-				continue;
 			}
 
-			ProcessVertexIndices(indexStrings.back());
+			else
+			{
+				ProcessVertexIndices(indexStrings.back());
 
-			int32_t newVertex = AddVertex();
+				int32_t newVertex = AddVertex();
 
-			vertexIndices.push_back(newVertex);
+				vertexIndices.push_back(newVertex);
 
-			m_uniqueVertices[indexStrings.back().c_str()] = newVertex;
+				m_uniqueVertices[indexStrings.back()] = newVertex;
 
 
-			indexStrings.resize(indexStrings.size() + 1);
+				indexStrings.resize(indexStrings.size() + 1);
+			}
 
 			objBuffer >> indexStrings.back();
 
 			char next = static_cast<char>(indexStrings.back()[0]);
 
+
 			if (std::string("+-0123456789").find(next) == std::string::npos)
 			{
-				objBuffer.seekg(-static_cast<long long>(indexStrings.back().size()));
-				indexStrings.back() = std::string();
+
 				break;
 			}
 
@@ -170,6 +170,7 @@ namespace ion
 			break;
 
 		default:
+			__debugbreak();
 			for (size_t index = 1; index < indexStrings.size() - 1; ++index)
 			{
 				m_currentModel->m_indices.push_back(vertexIndices[0]);
@@ -183,6 +184,14 @@ namespace ion
 			}
 			break;
 		}
+
+		if (objBuffer.eof())
+			return;
+
+		objBuffer.seekg(objBuffer.tellg() - static_cast<long long>(indexStrings.back().size()));
+		objBuffer >> line;
+
+
 	}
 
 	void Model::Importer::ProcessVertexIndices(const std::string& faceString)
@@ -300,8 +309,8 @@ namespace ion
 				break;
 
 			case 'f':
-				//FaceState(characters, objBuffer);
-				//break;
+				FaceState(characters, objBuffer);
+				break;
 
 			default:
 				objBuffer >> characters;
