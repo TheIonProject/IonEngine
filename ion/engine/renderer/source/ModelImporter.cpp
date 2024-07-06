@@ -10,6 +10,7 @@
 
 namespace ion
 {
+
 	bool Model::Importer::FileToBuffer(const std::filesystem::path& path, std::stringstream& buffer)
 	{
 		std::ifstream		fileStream(path, std::ios::in);
@@ -103,55 +104,51 @@ namespace ion
 
 	void Model::Importer::FaceState(std::string& line, std::stringstream& objBuffer)
 	{
-		size_t						vertexCount = 0;
-		std::vector<int32_t>		vertexIndices;
-		std::list<std::string>	indexStrings;
+		std::vector<uint32_t>		vertexIndices;
+		std::string					indexString;
 
-		indexStrings.resize(1);
-		objBuffer >> indexStrings.back();
+		objBuffer >> indexString;
 
-
-		while (indexStrings.back().size())
+		while (true)
 		{
-			if (m_uniqueVertices.contains(indexStrings.back().c_str()))
+			if (m_uniqueVertices.contains(indexString))
 			{
-				int32_t		existingIndex = m_uniqueVertices[indexStrings.back()];
+				uint32_t		existingIndex = m_uniqueVertices[indexString];
 
 				vertexIndices.push_back(existingIndex);
-
-				indexStrings.resize(indexStrings.size() + 1);
-
 			}
 
 			else
 			{
-				ProcessVertexIndices(indexStrings.back());
+				ProcessVertexIndices(indexString);
 
-				int32_t newVertex = AddVertex();
+				uint32_t		newVertex = AddVertex();
 
 				vertexIndices.push_back(newVertex);
+				m_uniqueVertices[indexString] = newVertex;
 
-				m_uniqueVertices[indexStrings.back()] = newVertex;
-
-
-				indexStrings.resize(indexStrings.size() + 1);
 			}
 
-			objBuffer >> indexStrings.back();
+			indexString = std::string();
+			objBuffer >> indexString;
 
-			char next = static_cast<char>(indexStrings.back()[0]);
-
-
-			if (std::string("+-0123456789").find(next) == std::string::npos)
-			{
-
+			if (std::string("+-0123456789").find(indexString[0]) == std::string::npos)
 				break;
-			}
-
-			++vertexCount;
 		}
 
+		AddFaceIndices(vertexIndices);
 
+		if (objBuffer.eof())
+			return;
+
+		objBuffer.seekg(objBuffer.tellg() - static_cast<long long>(indexString.size()));
+		objBuffer >> line;
+
+
+	}
+
+	void Model::Importer::AddFaceIndices(const std::vector<uint32_t>& vertexIndices)
+	{
 		switch (vertexIndices.size())
 		{
 		case 0: break;
@@ -170,13 +167,12 @@ namespace ion
 			break;
 
 		default:
-			__debugbreak();
-			for (size_t index = 1; index < indexStrings.size() - 1; ++index)
+			for (size_t index = 1; index < vertexIndices.size() - 1; ++index)
 			{
 				m_currentModel->m_indices.push_back(vertexIndices[0]);
 				m_currentModel->m_indices.push_back(vertexIndices[index]);
 
-				if (index == indexStrings.size() - 1)
+				if (index == vertexIndices.size() - 1)
 					m_currentModel->m_indices.push_back(vertexIndices[1]);
 
 				else
@@ -184,28 +180,20 @@ namespace ion
 			}
 			break;
 		}
-
-		if (objBuffer.eof())
-			return;
-
-		objBuffer.seekg(objBuffer.tellg() - static_cast<long long>(indexStrings.back().size()));
-		objBuffer >> line;
-
-
 	}
 
 	void Model::Importer::ProcessVertexIndices(const std::string& faceString)
 	{
 		std::string		index;
 
-		int32_t			vertexAttribute = 0;
+		uint32_t			vertexAttribute = 0;
 		size_t			character = 0;
 
 		while (character < faceString.size())
 		{
 			if (faceString[character] == '/')
 			{
-				int32_t convertedIndex = atoi(index.c_str());
+				uint32_t convertedIndex = atoi(index.c_str());
 
 				if (convertedIndex < 1)
 					convertedIndex += NegativeToPositive(vertexAttribute);
@@ -230,28 +218,28 @@ namespace ion
 
 	}
 
-	int32_t Model::Importer::NegativeToPositive(int32_t index)
+	uint32_t Model::Importer::NegativeToPositive(uint32_t index)
 	{
 		switch (index)
 		{
 		case 0:
-			return static_cast<int32_t>(m_positions.size());
+			return static_cast<uint32_t>(m_positions.size());
 
 		case 1:
-			return static_cast<int32_t>(m_texCoords.size());
+			return static_cast<uint32_t>(m_texCoords.size());
 
 		case 2:
-			return static_cast<int32_t>(m_normals.size());
+			return static_cast<uint32_t>(m_normals.size());
 
 		default:
 			return 0;
 		}
 	}
 
-	int32_t Model::Importer::AddVertex(void)
+	uint32_t Model::Importer::AddVertex(void)
 	{
 		Vertex		newVertex(m_positions[m_CurrentPosition]);
-		int32_t		newIndex = static_cast<int32_t>(m_currentModel->m_vertices.size());
+		uint32_t	newIndex = static_cast<uint32_t>(m_currentModel->m_vertices.size());
 
 		if (m_normals.size())
 			newVertex.Normal() = m_normals[m_CurrentNormal];
@@ -263,7 +251,7 @@ namespace ion
 		return newIndex;
 	}
 
-	int32_t& Model::Importer::operator[](int32_t index)
+	uint32_t& Model::Importer::operator[](uint32_t index)
 	{
 		switch (index)
 		{
