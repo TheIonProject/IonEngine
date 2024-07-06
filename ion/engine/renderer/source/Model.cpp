@@ -1,17 +1,17 @@
 #include <fstream>
 
+#include "IonDebug.hpp"
+
 #include "Model.h"
 #include "ModelImporter.h"
 
 namespace ion
 {
 	Model::Model(Model&& other) noexcept
-		: m_properties(other.m_properties)
 	{
 		m_indices = std::move(other.m_indices);
 		m_vertices = std::move(other.m_vertices);
 
-		other.m_properties = 0;
 	}
 
 	bool Model::ImportWavefront(const std::filesystem::path& path)
@@ -21,6 +21,26 @@ namespace ion
 
 		return reader.LoadModel(path);
 
+	}
+
+	bool Model::ImportManually(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices) noexcept
+	{
+		m_vertices = std::forward<std::vector<Vertex>&&>(vertices);
+		m_indices = std::forward<std::vector<uint32_t>&&>(indices);
+
+		if (!m_indices.size())
+		{
+			ION_LOG_ERROR("Missing indices");
+			return false;
+		}
+
+		if (!m_vertices.size())
+		{
+			ION_LOG_ERROR("Missing vertices");
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -48,8 +68,6 @@ namespace ion
 		m_indices = rhs.m_indices;
 		m_vertices = rhs.m_vertices;
 
-		m_properties = rhs.m_properties;
-
 		return *this;
 	}
 
@@ -58,8 +76,6 @@ namespace ion
 	{
 		m_indices = std::move(rhs.m_indices);
 		m_vertices = std::move(rhs.m_vertices);
-
-		m_properties = rhs.m_properties;
 
 		return *this;
 	}
