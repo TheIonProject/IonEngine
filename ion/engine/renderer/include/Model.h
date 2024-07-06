@@ -37,7 +37,7 @@ namespace ion
 
 						Model(void) = default;
 						Model(const Model& other) = default;
-						Model(const Model&& other) noexcept = default;
+						Model(Model&& other) noexcept;
 
 
 						~Model(void) = default;
@@ -47,7 +47,11 @@ namespace ion
 
 
 		// Write data back into a plain text file
-		bool			Export(const std::filesystem::path& path);
+		bool			Export(const std::filesystem::path& path)	const;
+
+
+		Model&			operator=(const Model& rhs);
+		Model&			operator=(Model&& rhs)						noexcept;
 
 
 	private:
@@ -55,7 +59,7 @@ namespace ion
 		std::vector<Vertex>		m_vertices;
 		std::vector<int32_t>	m_indices;
 
-		int32_t					m_parent = 0;
+		int32_t					m_parent = -1;
 		FlagType				m_properties = 0;
 	};
 
