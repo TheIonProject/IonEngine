@@ -12,7 +12,7 @@
 
 NAME: ModelImporter.h
 
-DESCTIPTION: Importer classes for different file format
+DESCTIPTION: Importer classe for Model objects
 
 AUTHOR: Noah de Pischof | @torrra on GitHub
 

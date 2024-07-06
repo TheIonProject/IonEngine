@@ -25,7 +25,6 @@ E is used as a prefix for enums
 
 
 
-
 #pragma once
 
 #include <vector>
