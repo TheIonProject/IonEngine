@@ -40,6 +40,10 @@ ION_ prefix helps identify macros specific to the project
 ION_PUSH_WARNINGS()
 ION_DISABLE_WARNING(ION_VALUE_TRUNCATION)
 
+// Using both glad.h and the windows API redefines a macro,
+// disable that warning as both old and new values are the same (__stdcall)
+ION_DISABLE_WARNING(ION_MACRO_REDEFINITION)
+
 #include <windows.h>
 #include <winuser.h>
 
