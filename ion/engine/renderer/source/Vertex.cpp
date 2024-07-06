@@ -1,3 +1,25 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: Vertex.cpp
+
+DESCTIPTION: Vertex member function definitions, see Vertex.h
+
+AUTHOR: Noah de Pischof | @torrra on GitHub
+
+
+*/
+
+
 #include "Vertex.h"
 
 namespace ion
