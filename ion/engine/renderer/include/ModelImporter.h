@@ -7,7 +7,7 @@
 
 namespace ion
 {
-	class Model::Importer
+	class Model::Importer final
 	{
 	private:
 
@@ -15,25 +15,20 @@ namespace ion
 		using Vec3Array = std::vector<math::Vector3f>;
 		using VertexMap = std::unordered_map<std::string, uint32_t>;
 
-		using FileName = std::filesystem::path;
-
 	public:
 
-		Importer(void) = default;
-		Importer(const std::filesystem::path& path);
+						Importer(void) = default;
+						Importer(Model* model);
+						~Importer(void) = default;
 
-		~Importer(void) = default;
+		bool			LoadModel(const std::filesystem::path& path);
 
-		Model* LoadModel(void);
-
-		// auto = std::filesystem::path
-		auto& File();
+		Model*&			CurrentModel();
 
 	private:
 
 		bool			FileToBuffer
-		(const FileName& path, std::stringstream& buffer);
-
+		(const std::filesystem::path& path, std::stringstream& buffer);
 
 		void			PositionState(std::string& string, std::stringstream& objBuffer);
 		void			NormalState(std::string& string, std::stringstream& objBuffer);
@@ -43,21 +38,18 @@ namespace ion
 		void			AddFaceIndices(const std::vector<uint32_t>& vertexIndices);
 
 		void			ProcessVertexIndices(const std::string& indexString);
-		uint32_t		NegativeToPositive(uint32_t index);
+		int32_t			NegativeToPositive(uint32_t index);
 
 		uint32_t		AddVertex(void);
 
 		uint32_t&		operator[](uint32_t index);
 
-
 		VertexMap		m_uniqueVertices;
-		FileName		m_file;
 
 		Vec3Array		m_positions;
 		Vec3Array		m_normals;
 		Vec2Array		m_texCoords;
 
-		Model*			m_root = nullptr;
 		Model*			m_currentModel = nullptr;
 
 

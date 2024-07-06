@@ -186,14 +186,14 @@ namespace ion
 	{
 		std::string		index;
 
-		uint32_t			vertexAttribute = 0;
+		uint32_t		vertexAttribute = 0;
 		size_t			character = 0;
 
 		while (character < faceString.size())
 		{
 			if (faceString[character] == '/')
 			{
-				uint32_t convertedIndex = atoi(index.c_str());
+				int32_t convertedIndex = atoi(index.c_str());
 
 				if (convertedIndex < 1)
 					convertedIndex += NegativeToPositive(vertexAttribute);
@@ -218,18 +218,18 @@ namespace ion
 
 	}
 
-	uint32_t Model::Importer::NegativeToPositive(uint32_t index)
+	int32_t Model::Importer::NegativeToPositive(uint32_t index)
 	{
 		switch (index)
 		{
 		case 0:
-			return static_cast<uint32_t>(m_positions.size());
+			return static_cast<int32_t>(m_positions.size());
 
 		case 1:
-			return static_cast<uint32_t>(m_texCoords.size());
+			return static_cast<int32_t>(m_texCoords.size());
 
 		case 2:
-			return static_cast<uint32_t>(m_normals.size());
+			return static_cast<int32_t>(m_normals.size());
 
 		default:
 			return 0;
@@ -270,23 +270,25 @@ namespace ion
 
 
 
-	Model::Importer::Importer(const std::filesystem::path& path)
-		: m_file(path)
+	Model::Importer::Importer(Model* model)
+		: m_currentModel(model)
 	{
 	}
 
-	Model* Model::Importer::LoadModel(void)
+	bool Model::Importer::LoadModel(const std::filesystem::path& path)
 	{
+		if (!m_currentModel)
+			return false;
+
 		std::stringstream	objBuffer;
 
 
-		if (!FileToBuffer(m_file, objBuffer))
-			return nullptr;
+		if (!FileToBuffer(path, objBuffer))
+			return false;
 
 		std::string			characters;
 
 		objBuffer >> characters;
-		m_root = m_currentModel = new Model();
 
 		while (!objBuffer.eof())
 		{
@@ -306,11 +308,13 @@ namespace ion
 			}
 		}
 
-		return m_root;
+		return true;
 	}
 
-	auto& Model::Importer::File()
+	Model*& Model::Importer::CurrentModel()
 	{
-		return m_file;
+		return m_currentModel;
 	}
+
+
 }
