@@ -39,20 +39,6 @@ E is used as a prefix for enums
 namespace ion
 {
 
-	enum EModelProperties : uint8_t
-	{
-		ROOT				= 1,
-		TEXTURE				= 1 << 1,
-		MATERIAL			= 1 << 2,
-		DIFFUSE				= 1 << 3,
-		GLOW				= 1 << 4,
-		NORMAL_MAP			= 1 << 5,
-		NORMAL_TANGENT		= 1 << 6,
-		SPECULAR			= 1 << 7
-
-	};
-
-
 	class Model final
 	{
 	private:
