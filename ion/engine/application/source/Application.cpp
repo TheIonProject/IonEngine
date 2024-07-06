@@ -75,7 +75,7 @@ void ion::Application::InitApplication(void)
 	glViewport(0, 0, bufferWidth, bufferHeight);
 	create_triangle(); // Testing triangle
 	create_shaders(); // Test shader
-
+	m_textureCache.AddTexture("Wall.jpg");
 
 	// Initialize frame buffer
 	m_frameBuffer.InitFrameBuffer();
@@ -104,6 +104,7 @@ void ion::Application::InitImGui(void)
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
+
 	ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
@@ -118,6 +119,7 @@ void ion::Application::UpdateApplication(void)
 
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
+	glBindTexture(GL_TEXTURE_2D, m_textureCache.GetTexture("Wall.jpg").m_id);
 
 	MainMenuBar();
 	m_viewport.UpdateViewport(m_frameBuffer);
