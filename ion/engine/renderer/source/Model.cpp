@@ -14,12 +14,12 @@ namespace ion
 		other.m_properties = 0;
 	}
 
-	Model* Model::Import(const std::filesystem::path& path)
+	bool Model::Import(const std::filesystem::path& path)
 	{
 
-		Importer reader(path);
+		Importer reader(this);
 
-		return reader.LoadModel();
+		return reader.LoadModel(path);
 
 	}
 
