@@ -6,13 +6,12 @@
 namespace ion
 {
 	Model::Model(Model&& other) noexcept
-		: m_properties(other.m_properties), m_parent(other.m_parent)
+		: m_properties(other.m_properties)
 	{
 		m_indices = std::move(other.m_indices);
 		m_vertices = std::move(other.m_vertices);
 
 		other.m_properties = 0;
-		other.m_parent = -1;
 	}
 
 	Model* Model::Import(const std::filesystem::path& path)
@@ -50,7 +49,6 @@ namespace ion
 		m_vertices = rhs.m_vertices;
 
 		m_properties = rhs.m_properties;
-		m_parent = rhs.m_parent;
 
 		return *this;
 	}
@@ -62,7 +60,6 @@ namespace ion
 		m_vertices = std::move(rhs.m_vertices);
 
 		m_properties = rhs.m_properties;
-		m_parent = rhs.m_parent;
 
 		return *this;
 	}

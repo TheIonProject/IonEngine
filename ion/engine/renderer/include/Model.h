@@ -57,9 +57,8 @@ namespace ion
 	private:
 
 		std::vector<Vertex>		m_vertices;
-		std::vector<int32_t>	m_indices;
+		std::vector<uint32_t>	m_indices;
 
-		int32_t					m_parent = -1;
 		FlagType				m_properties = 0;
 	};
 
