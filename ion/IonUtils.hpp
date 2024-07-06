@@ -32,7 +32,7 @@ namespace ion
     // Append a dynamic array to another of the same type
     template <typename TValueType>
     inline std::vector<TValueType>&     operator+=
-    (std::vector<TValueType>& lhs, std::vector<TValueType>& rhs);
+    (std::vector<TValueType>& lhs, const std::vector<TValueType>& rhs);
 
 
     template <typename TValueType>
@@ -45,7 +45,7 @@ namespace ion
 
 
 	template <typename TValueType>
-	inline std::vector<TValueType>& operator+=(std::vector<TValueType>& lhs, std::vector<TValueType>& rhs)
+	inline std::vector<TValueType>& operator+=(std::vector<TValueType>& lhs, const std::vector<TValueType>& rhs)
 	{
 		for (const TValueType& element : rhs)
 			lhs.push_back(element);
