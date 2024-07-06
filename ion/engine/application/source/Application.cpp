@@ -42,7 +42,7 @@ void ion::Application::InitApplication(void)
 	// Initialize GLFW
 	if (glfwInit() == GLFW_FALSE)
 		throw std::exception("GLFW init failed");
-	
+
 	// Set window hints
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -53,10 +53,10 @@ void ion::Application::InitApplication(void)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	// Get monitor values for screen size & refresh rate
-	const GLFWvidmode* vidMode = glfwGetVideoMode((GLFWmonitor*)glfwGetPrimaryMonitor());
+	const GLFWvidmode* vidMode = glfwGetVideoMode((GLFWmonitor*) glfwGetPrimaryMonitor());
 	m_windowWidth = vidMode->width;
 	m_windowHeight = vidMode->height;
-	
+
 	// Initialize window pointer
 	m_windowPtr = glfwCreateWindow(m_windowWidth, m_windowHeight, "IonEngine", NULL, NULL);
 
@@ -71,9 +71,8 @@ void ion::Application::InitApplication(void)
 	// Check glad init successfully
 	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
 		throw std::exception("GLAD init failed");
-	
+
 	glViewport(0, 0, bufferWidth, bufferHeight);
-	
 	create_triangle(); // Testing triangle
 	create_shaders(); // Test shader
 
@@ -83,6 +82,8 @@ void ion::Application::InitApplication(void)
 
 	// Initialize ImGui
 	InitImGui();
+
+	m_viewport.SetViewportMode(ViewportMode::HD_RATIO);
 }
 
 void ion::Application::InitImGui(void)
@@ -91,6 +92,7 @@ void ion::Application::InitImGui(void)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void) io;
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -106,41 +108,6 @@ void ion::Application::InitImGui(void)
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
-void ion::Application::UpdateViewport(void)
-{
-	// OpenGL editor window
-	ImGui::Begin("Editor View");
-
-	const GLsizei windowWidth = static_cast<GLsizei>(ImGui::GetContentRegionAvail().x);
-	const GLsizei windowHeight = static_cast<GLsizei>(ImGui::GetContentRegionAvail().y);
-
-	m_frameBuffer.RescaleFrameBuffer(windowWidth, windowHeight);
-	glViewport(0, 0, windowWidth, windowHeight);
-
-	ImVec2 pos = ImGui::GetCursorScreenPos();
-	
-	ImGui::GetWindowDrawList()->AddImage(
-		/*(GLvoid*) m_frameBuffer.GetFrameTexture()*/
-		(void*) static_cast<uint64_t>(m_frameBuffer.GetFrameBuffer()),
-		ImVec2(pos.x, pos.y),
-		ImVec2(pos.x + windowWidth, pos.y + windowHeight),
-		ImVec2(0, 1),
-		ImVec2(1, 0)
-	);
-
-	ImGui::End();
-
-	m_frameBuffer.Bind();
-
-	glUseProgram(g_shader);
-	glBindVertexArray(g_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	m_frameBuffer.UnBind();
-}
-
 void ion::Application::UpdateApplication(void)
 {
 	ImGui_ImplOpenGL3_NewFrame();
@@ -153,9 +120,9 @@ void ion::Application::UpdateApplication(void)
 	ImGui::DockSpaceOverViewport();
 
 	MainMenuBar();
-	UpdateViewport();
+	m_viewport.UpdateViewport(m_frameBuffer);
 	ImGui::ShowMetricsWindow();
-	
+
 	ImGui::Render();
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
