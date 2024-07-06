@@ -13,7 +13,7 @@ namespace ion
 
 		using Vec2Array = std::vector<math::Vector2f>;
 		using Vec3Array = std::vector<math::Vector3f>;
-		using VertexMap = std::unordered_map<const char*, int32_t>;
+		using VertexMap = std::unordered_map<std::string, int32_t>;
 
 		using FileName = std::filesystem::path;
 
