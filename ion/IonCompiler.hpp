@@ -53,6 +53,8 @@ ION_ prefix helps identify macros specific to the project
 // Warning when a value is too large to fit into a type
 #define ION_VALUE_TRUNCATION                    4309
 
+#define ION_MACRO_REDEFINITION                  4005
+
 #elif defined(__GNUC__)
 
 // GCC pragma warning directives
@@ -62,6 +64,13 @@ ION_ prefix helps identify macros specific to the project
 #define ION_PUSH_WARNINGS()                   ION_PRAGMA(GCC diagnostic push)
 #define ION_POP_WARNINGS()                    ION_PRAGMA(GCC diagnostic pop)
 #define ION_DISABLE_WARNING(_warning)         ION_PRAGMA(GCC diagnostic ignored #_warning)
+
+
+#define ION_UNREACHABLE_CODE
+#define ION_VALUE_TRUNCATION
+#define ION_MACRO_REDEFINITION
+
+
 
 
 #else
