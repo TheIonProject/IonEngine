@@ -11,7 +11,7 @@
 namespace ion
 {
 
-	bool Model::Importer::FileToBuffer(const std::filesystem::path& path, std::stringstream& buffer)
+	bool Model::WavefrontImporter::FileToBuffer(const std::filesystem::path& path, std::stringstream& buffer)
 	{
 		std::ifstream		fileStream(path, std::ios::in);
 
@@ -31,7 +31,7 @@ namespace ion
 		return true;
 	}
 
-	void Model::Importer::PositionState(std::string& string, std::stringstream& objBuffer)
+	void Model::WavefrontImporter::PositionState(std::string& string, std::stringstream& objBuffer)
 	{
 		if (string.size() > 1)
 		{
@@ -66,7 +66,7 @@ namespace ion
 		}
 	}
 
-	void Model::Importer::NormalState(std::string& string, std::stringstream& objBuffer)
+	void Model::WavefrontImporter::NormalState(std::string& string, std::stringstream& objBuffer)
 	{
 		float				x, y, z;
 		std::stringstream	line;
@@ -84,7 +84,7 @@ namespace ion
 		}
 	}
 
-	void Model::Importer::TextureCoordState(std::string& string, std::stringstream& objBuffer)
+	void Model::WavefrontImporter::TextureCoordState(std::string& string, std::stringstream& objBuffer)
 	{
 		float				x, y;
 		std::stringstream	line;
@@ -102,7 +102,7 @@ namespace ion
 		}
 	}
 
-	void Model::Importer::FaceState(std::string& line, std::stringstream& objBuffer)
+	void Model::WavefrontImporter::FaceState(std::string& line, std::stringstream& objBuffer)
 	{
 		std::vector<uint32_t>		vertexIndices;
 		std::string					indexString;
@@ -147,7 +147,7 @@ namespace ion
 
 	}
 
-	void Model::Importer::AddFaceIndices(const std::vector<uint32_t>& vertexIndices)
+	void Model::WavefrontImporter::AddFaceIndices(const std::vector<uint32_t>& vertexIndices)
 	{
 		switch (vertexIndices.size())
 		{
@@ -182,7 +182,7 @@ namespace ion
 		}
 	}
 
-	void Model::Importer::ProcessVertexIndices(const std::string& faceString)
+	void Model::WavefrontImporter::ProcessVertexIndices(const std::string& faceString)
 	{
 		std::string		index;
 
@@ -218,7 +218,7 @@ namespace ion
 
 	}
 
-	int32_t Model::Importer::NegativeToPositive(uint32_t index)
+	int32_t Model::WavefrontImporter::NegativeToPositive(uint32_t index)
 	{
 		switch (index)
 		{
@@ -236,7 +236,7 @@ namespace ion
 		}
 	}
 
-	uint32_t Model::Importer::AddVertex(void)
+	uint32_t Model::WavefrontImporter::AddVertex(void)
 	{
 		Vertex		newVertex(m_positions[m_CurrentPosition]);
 		uint32_t	newIndex = static_cast<uint32_t>(m_currentModel->m_vertices.size());
@@ -251,7 +251,7 @@ namespace ion
 		return newIndex;
 	}
 
-	uint32_t& Model::Importer::operator[](uint32_t index)
+	uint32_t& Model::WavefrontImporter::operator[](uint32_t index)
 	{
 		switch (index)
 		{
@@ -270,12 +270,12 @@ namespace ion
 
 
 
-	Model::Importer::Importer(Model* model)
+	Model::WavefrontImporter::WavefrontImporter(Model* model)
 		: m_currentModel(model)
 	{
 	}
 
-	bool Model::Importer::LoadModel(const std::filesystem::path& path)
+	bool Model::WavefrontImporter::LoadModel(const std::filesystem::path& path)
 	{
 		if (!m_currentModel)
 			return false;
@@ -311,7 +311,7 @@ namespace ion
 		return true;
 	}
 
-	Model*& Model::Importer::CurrentModel()
+	Model*& Model::WavefrontImporter::CurrentModel()
 	{
 		return m_currentModel;
 	}

@@ -31,7 +31,7 @@ namespace ion
 
 		using FlagType		= uint8_t;
 
-		class Importer;
+		class WavefrontImporter;
 
 	public:
 
@@ -43,7 +43,7 @@ namespace ion
 						~Model(void) = default;
 
 		// Read from a wavefront OBJ file
-		bool			Import(const std::filesystem::path& path);
+		bool			ImportWavefront(const std::filesystem::path& path);
 
 
 		// Write data back into a plain text file

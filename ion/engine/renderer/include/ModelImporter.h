@@ -7,7 +7,7 @@
 
 namespace ion
 {
-	class Model::Importer final
+	class Model::WavefrontImporter final
 	{
 	private:
 
@@ -17,9 +17,9 @@ namespace ion
 
 	public:
 
-						Importer(void) = default;
-						Importer(Model* model);
-						~Importer(void) = default;
+						WavefrontImporter(void) = default;
+						WavefrontImporter(Model* model);
+						~WavefrontImporter(void) = default;
 
 		bool			LoadModel(const std::filesystem::path& path);
 

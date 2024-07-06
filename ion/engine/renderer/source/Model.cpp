@@ -14,10 +14,10 @@ namespace ion
 		other.m_properties = 0;
 	}
 
-	bool Model::Import(const std::filesystem::path& path)
+	bool Model::ImportWavefront(const std::filesystem::path& path)
 	{
 
-		Importer reader(this);
+		WavefrontImporter reader(this);
 
 		return reader.LoadModel(path);
 
