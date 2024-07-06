@@ -75,7 +75,7 @@ void ion::Application::InitApplication(void)
 	glViewport(0, 0, bufferWidth, bufferHeight);
 	create_triangle(); // Testing triangle
 	create_shaders(); // Test shader
-	m_textureCache.AddTexture("Wall.jpg");
+	m_textureCache.AddTexture("wall.jpg");
 
 	// Initialize frame buffer
 	m_frameBuffer.InitFrameBuffer();
@@ -119,7 +119,7 @@ void ion::Application::UpdateApplication(void)
 
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
-	glBindTexture(GL_TEXTURE_2D, m_textureCache.GetTexture("Wall.jpg").m_id);
+	m_textureCache.BindTexture("wall.jpg");
 
 	MainMenuBar();
 	m_viewport.UpdateViewport(m_frameBuffer);

@@ -20,9 +20,10 @@ namespace ion
 		~TextureCache(void) = default;
 
 		Texture AddTexture(std::string textureFileName);
-
-		Texture& GetTexture(std::string textureName);
+		void BindTexture(std::string textureFileName);
+		//Texture& GetTexture(std::string textureName);
 		Texture GetTexture(std::string textureName) const noexcept;
+
 	private:
 		std::unordered_map<std::string, Texture> m_textureMap;
 	};
