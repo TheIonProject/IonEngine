@@ -110,8 +110,20 @@ namespace internal
 
     inline void Log(bool _error, const char* _file, uint32_t _line, const std::string& _message)
     {
+        // Max log file size (about 1MB)
+        const uintmax_t         maxSize = 0x100000;
+
+        std::filesystem::path   logPath("logs/logs.txt");
         // Open log file
-        std::ofstream   logFile("logs/logs.txt", std::ios::app | std::ios::binary);
+        std::ofstream           logFile(logPath, std::ios::app | std::ios::binary);
+
+
+        // Wipe file if too big
+        if (std::filesystem::file_size(logPath) > maxSize)
+        {
+            logFile.close();
+            logFile.open(logPath, std::ios::out | std::ios::trunc | std::ios::binary);
+        }
 
         // Write message as message or error
         logFile << (_error ? "[ERROR] " : "[MESSAGE] ") <<  _message << '\n' <<
@@ -171,13 +183,17 @@ if (!std::filesystem::exists("logs")) std::filesystem::create_directory("logs");
 
 // Disable assert and check in release
 
-#define ION_ASSERT(expression)
-#define ION_CHECK(_expression)
+#define ION_ASSERT(expression) (void) _expression;
+#define ION_CHECK(_expression) (void) _expression;
 
 // Disable logging in release
 
 #define ION_LOG(_message)
 #define ION_LOG_ERROR(_message)
+
+
+#define ION_SETUP_LOGS()
+#define ION_CLEAR_LOGS()
 
 # endif // !NDEBUG
 
