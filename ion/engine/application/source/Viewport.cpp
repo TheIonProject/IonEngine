@@ -1,3 +1,24 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: Viewport.cpp
+
+DESCTIPTION: Viewport class, made to handle scene view window
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #include <iostream>
 #include <exception>
 
@@ -16,6 +37,7 @@
 
 ion::Viewport::Viewport(void)
 {
+	m_frameBuffer = nullptr;
 	m_currentMode = ViewportMode::FILL_WINDOW;
 	m_prevMode = m_currentMode;
 	m_width = 0;
@@ -26,13 +48,18 @@ ion::Viewport::Viewport(void)
 
 ion::Viewport::Viewport(ViewportMode const viewportMode)
 {
+	m_frameBuffer = nullptr;
 	m_currentMode = viewportMode;
 	m_prevMode = m_currentMode;
 	m_width = 0;
 	m_height = 0;
 	m_position = ImVec2(0.0f, 0.0f);
-	
 	m_isOpened = (viewportMode == ViewportMode::CUSTOM_RATIO);
+}
+
+ion::Viewport::~Viewport(void)
+{
+	delete m_frameBuffer;
 }
 
 ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
@@ -47,44 +74,29 @@ void ion::Viewport::SetViewportMode(ViewportMode const viewportMode)
 
 void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
 {
-	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar /*| ImGuiWindowFlags_NoCollapse*/);
-
-	ImVec2 regionSize = ImGui::GetContentRegionAvail();
-	const GLsizei regionWidth = static_cast<GLsizei>(regionSize.x);
-	const GLsizei regionHeight = static_cast<GLsizei>(regionSize.y);
-
-	frameBuffer.RescaleFrameBuffer(
-		regionWidth,
-		regionHeight
-	);
-
-	glViewport(0, 0, regionWidth, regionHeight);
-
-	ImVec2 pos = ImGui::GetCursorScreenPos();
-
-	OptionBarUI();
-	SetViewportSize();
-	ViewportPosition();
-
-	ImGui::GetWindowDrawList()->AddImage(
-		(void*) static_cast<uint64_t>(frameBuffer.GetFrameBuffer()),
-		ImVec2(m_position.x, m_position.y),
-		ImVec2(m_position.x + (float) m_width, m_position.y + (float) m_height),
-		ImVec2(0, 1),
-		ImVec2(1, 0)
-	);
-
-	ImGui::End();
-
 	frameBuffer.Bind();
-
 	glUseProgram(g_shader);
 	glBindVertexArray(g_VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 	glUseProgram(0);
-
 	frameBuffer.UnBind();
+
+	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
+
+	OptionBarUI();
+	SetViewportSize();
+	ViewportPosition();
+
+	uint64_t textureID = frameBuffer.GetFrameTexture();
+	ImGui::Image(
+		reinterpret_cast<void*>(textureID),
+		ImVec2((float)m_width, (float)m_height),
+		ImVec2(0, 1),
+		ImVec2(1, 0)
+	);
+
+	ImGui::End();
 }
 
 void ion::Viewport::SetViewportSize(void)
@@ -121,6 +133,7 @@ void ion::Viewport::ViewportPosition(void)
 	ImVec2 regionSize = ImGui::GetContentRegionAvail();
 
 	m_position.x = pos.x;
+	// TODO: line below may be brocken
 	m_position.y = pos.y + (0.5f * (regionSize.y - m_height));
 }
 
@@ -192,7 +205,7 @@ void ion::Viewport::CustomAspectModal(int const originalWidth, int const origina
 		// Title text
 		ImGui::Text("Set viewport size (in pixels)");
 		
-		// Formating
+		// Formatting
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
@@ -204,7 +217,7 @@ void ion::Viewport::CustomAspectModal(int const originalWidth, int const origina
 		ImGui::Spacing();
 		
 #if DEBUG_VIEWPORT == 1
-			std::printf("original size: (%d, %d)\nNew size: (%d, %d)", originalWidth, originalHeight, m_width, m_height);
+			std::printf("original size: (%d, %d)\nNew size: (%d, %d)\n", originalWidth, originalHeight, m_width, m_height);
 #endif
 #ifdef WIP_CANCEL_BUTTON
 		// Cancel button
