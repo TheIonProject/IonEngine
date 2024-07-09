@@ -24,8 +24,6 @@ NOTE: Model objects already store vertex and index data, so these buffers only c
 #pragma once
 
 #include "glad/glad.h"
-
-#include "Model.h"
 #include "Vertex.h"
 
 #define ION_VERTEX_BUFFER           GL_ARRAY_BUFFER
@@ -34,13 +32,11 @@ NOTE: Model objects already store vertex and index data, so these buffers only c
 
 namespace ion
 {
+    // This struct only defines the buffer's ValueType if
+    // its template parameter is of a valid buffer type
+    // (ION_VERTEX_BUFFER or ION_INDEX_BUFFER)
     template <GLenum TBufferEnum>
     struct BufferTraits;
-
-    template <GLenum TBufferEnum> requires
-     (TBufferEnum == ION_VERTEX_BUFFER || TBufferEnum == ION_INDEX_BUFFER)
-     class Buffer;
-
 
 
 // Buffer traits specialization to determine buffer value type
@@ -58,67 +54,71 @@ namespace ion
     };
 
 
-    template <GLenum TBufferEnum> requires
-    (TBufferEnum == ION_VERTEX_BUFFER || TBufferEnum == ION_INDEX_BUFFER)
+// ---- Buffer class for VBOs and EBOs ----
+
+    template <GLenum TBufferEnum>
     class Buffer
     {
     private:
 
+        // Value type, vertex or index (unsigned int)
         using ValueType = BufferTraits<TBufferEnum>::ValueType;
 
     public:
 
-     inline         Buffer(void);
-     inline         ~Buffer(void);
+     inline             Buffer(void);
+     inline             ~Buffer(void);
 
+     // Feed buffer data to OpenGL
+     inline void        SetData(int64_t size, ValueType const* data)  const;
 
-     inline void        SetData(uint64_t size, ValueType* const data, bool dynamic = false)  const;
+     // Delete buffer and reset index
      inline void        DeleteData(void);
 
-     inline uint32_t    GetID(void)                                                        const;
+     // Get buffer index
+     inline uint32_t    GetID(void)                                   const;
 
     private:
 
-     uint32_t         m_id = 0;
+     uint32_t           m_id = 0;
 
     };
 
 
+    using VertexBuffer = Buffer<ION_VERTEX_BUFFER>;
+    using IndexBuffer = Buffer<ION_INDEX_BUFFER>;
 
 
 
 // ---- Implementations ----
 
-    template<GLenum TBufferEnum>
+    template <GLenum TBufferEnum>
     inline Buffer<TBufferEnum>::Buffer(void)
     {
         glCreateBuffers(1, &m_id);
     }
 
-    template<GLenum TBufferEnum>
-    inline void Buffer<TBufferEnum>::SetData(uint64_t size, ValueType* const data, bool dynamic) const
+    template <GLenum TBufferEnum>
+    inline void Buffer<TBufferEnum>::SetData(int64_t size, ValueType const* data) const
     {
-        if (dynamic)
-            glNamedBufferData(m_id, size, data, GL_DYNAMIC_DRAW);
-        else
-            glNamedBufferData(m_id, size, data, GL_STATIC_DRAW);
+        glNamedBufferData(m_id, size, data, GL_STATIC_DRAW);
     }
 
-    template<GLenum TBufferEnum>
+    template <GLenum TBufferEnum>
     inline void Buffer<TBufferEnum>::DeleteData(void)
     {
-        glDeleteBuffers(1, m_id);
+        glDeleteBuffers(1, &m_id);
 
         m_id = 0;
     }
 
-    template<GLenum TBufferEnum>
+    template <GLenum TBufferEnum>
     inline uint32_t Buffer<TBufferEnum>::GetID(void) const
     {
         return m_id;
     }
 
-    template<GLenum TBufferEnum>
+    template <GLenum TBufferEnum>
     inline Buffer<TBufferEnum>::~Buffer(void)
     {
         DeleteData();
@@ -128,15 +128,13 @@ namespace ion
 // ---- SetData specialization for vertex buffer objects ----
 
     template<>
-    inline void Buffer<ION_VERTEX_BUFFER>::SetData(uint64_t size, Vertex* const data, bool dynamic) const
+    inline void Buffer<ION_VERTEX_BUFFER>::SetData(int64_t size, Vertex const* vertices) const
     {
-        float* const  vertexData = reinterpret_cast<float* const>(data);
+        // First literal value inside a vertex is its position vector's x value,
+        // which is a float
+        float const*  vertexData = reinterpret_cast<float const*>(vertices);
 
-        if (dynamic)
-            glNamedBufferData(m_id, size, vertexData, GL_DYNAMIC_DRAW);
-        else
-            glNamedBufferData(m_id, size, vertexData, GL_STATIC_DRAW);
+        glNamedBufferData(m_id, size, vertexData, GL_STATIC_DRAW);
     }
-
 
 }
