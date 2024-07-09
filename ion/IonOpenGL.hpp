@@ -115,6 +115,7 @@ namespace internal::opengl
 
 // Calls an MSVC debug break instruction if an OpenGL error is found
 #define ION_GL_BREAK(_expression)			internal::opengl::ClearErrors(); _expression; if(!internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true)) __debugbreak();
+#define ION_GL_ASSERT(_expression)			internal::opengl::ClearErrors(); _expression; ION_ASSERT(internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true))
 
 #else
 
@@ -132,10 +133,11 @@ namespace internal::opengl
 
 #define ION_GL_BREAK(_expression)				(void) _expression
 
+#define ION_GL_ASSERT(_expression)				(void) _expression
+
 #endif // !NDebug
 
 
-#define ION_GL_ASSERT(_expression)			ION_ASSERT(ION_GL_CHECK(_expression))
 
 
 #endif // !__ION_OPENGL_H__
