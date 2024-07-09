@@ -191,6 +191,10 @@ if (!std::filesystem::exists("logs")) std::filesystem::create_directory("logs");
 #define ION_LOG(_message)
 #define ION_LOG_ERROR(_message)
 
+
+#define ION_SETUP_LOGS()
+#define ION_CLEAR_LOGS()
+
 # endif // !NDEBUG
 
 #endif // !__ION_ASSERT_H__
