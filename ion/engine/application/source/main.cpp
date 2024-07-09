@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-//#include "IonDebug.hpp"
+#include "IonDebug.hpp"
 
 // For memory leaks
 // Must be after #includes for ImGui compatibility
@@ -20,7 +20,7 @@ int main(void)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	{
-		//ION_SETUP_LOGS();
+		ION_SETUP_LOGS();
 
 		ion::Application application;
 
@@ -28,9 +28,10 @@ int main(void)
 		{
 			application.UpdateApplication();
 		}
+
+		std::cout << glGetError() << std::endl;
 	}
 
-	std::cout << glGetError() << std::endl;
 
 	return 0;
 }

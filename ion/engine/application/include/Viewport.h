@@ -1,7 +1,27 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: Viewport.h
+
+DESCTIPTION: Viewport class, made to handle scene view window
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #pragma once
 
 #include "FrameBuffer.h"
-//#include "Testing.h"
 
 namespace ion
 {
@@ -9,7 +29,7 @@ namespace ion
 	{
 		FILL_WINDOW,
 		HD_RATIO,
-		CUSTOM_RATIO // TODO: finish custom aspect ratio for viewport
+		CUSTOM_RATIO
 	};
 
 	class Viewport
@@ -17,12 +37,13 @@ namespace ion
 	public:
 		Viewport(void);
 		Viewport(ViewportMode const viewportMode);
-		~Viewport(void) = default;
+		~Viewport(void);
 
 		ViewportMode GetViewportMode(void) const noexcept;
 		void SetViewportMode(ViewportMode const viewportMode);
 
 		void UpdateViewport(FrameBuffer& frameBuffer);
+		FrameBuffer* m_frameBuffer;
 	private:
 		void SetViewportSize(void);
 		void ViewportPosition(void);
@@ -30,8 +51,8 @@ namespace ion
 		void CustomAspectModal(int const originalWidth, int const originalHeight);
 
 		ImVec2 m_position;
-		ViewportMode m_prevMode;
 		ViewportMode m_currentMode;
+		ViewportMode m_prevMode;
 		int m_width;
 		int m_height;
 		bool m_isOpened;

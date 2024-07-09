@@ -1,3 +1,24 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: Application.h
+
+DESCTIPTION: Application class to handle OpenGL window & UI windows
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #pragma once
 
 #include <glad/glad.h>
@@ -23,13 +44,15 @@ namespace ion
 		GLFWwindow*& GetWindowPtr(void);
 
 		void UpdateApplication(void);
+
+		static void StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
+		void ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
 	private:
 		void InitApplication(void);
 		void InitImGui(void);
 
 		GLFWwindow* m_windowPtr;
 		TextureCache m_textureCache; // TODO: debug remove, move to resource manager
-		FrameBuffer m_frameBuffer;
 		Viewport m_viewport;
 		int m_windowWidth;
 		int m_windowHeight;
