@@ -183,8 +183,8 @@ if (!std::filesystem::exists("logs")) std::filesystem::create_directory("logs");
 
 // Disable assert and check in release
 
-#define ION_ASSERT(expression)
-#define ION_CHECK(_expression)
+#define ION_ASSERT(expression) (void) _expression;
+#define ION_CHECK(_expression) (void) _expression;
 
 // Disable logging in release
 
