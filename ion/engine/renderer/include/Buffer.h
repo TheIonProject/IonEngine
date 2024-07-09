@@ -42,6 +42,7 @@ namespace ion
      class Buffer;
 
 
+
 // Buffer traits specialization to determine buffer value type
 
     template<>
@@ -53,7 +54,7 @@ namespace ion
     template<>
     struct BufferTraits<ION_INDEX_BUFFER>
     {
-        using ValueType = GLuint;
+        using ValueType = uint32_t;
     };
 
 
@@ -71,17 +72,22 @@ namespace ion
      inline         ~Buffer(void);
 
 
-     inline void    SetData(size_t size, ValueType const* data, bool dynamic = false)  const;
-     inline void    DeleteData(void);
+     inline void        SetData(uint64_t size, ValueType* const data, bool dynamic = false)  const;
+     inline void        DeleteData(void);
 
-     inline GLuint  GetID(void)                                                        const;
+     inline uint32_t    GetID(void)                                                        const;
 
     private:
 
-     GLuint         m_id = 0;
+     uint32_t         m_id = 0;
 
     };
 
+
+
+
+
+// ---- Implementations ----
 
     template<GLenum TBufferEnum>
     inline Buffer<TBufferEnum>::Buffer(void)
@@ -90,7 +96,7 @@ namespace ion
     }
 
     template<GLenum TBufferEnum>
-    inline void Buffer<TBufferEnum>::SetData(size_t size, ValueType const* data, bool dynamic) const
+    inline void Buffer<TBufferEnum>::SetData(uint64_t size, ValueType* const data, bool dynamic) const
     {
         if (dynamic)
             glNamedBufferData(m_id, size, data, GL_DYNAMIC_DRAW);
@@ -107,7 +113,7 @@ namespace ion
     }
 
     template<GLenum TBufferEnum>
-    inline GLuint Buffer<TBufferEnum>::GetID(void) const
+    inline uint32_t Buffer<TBufferEnum>::GetID(void) const
     {
         return m_id;
     }
@@ -119,12 +125,12 @@ namespace ion
     }
 
 
-// ---- Set data specialization for vertex buffer objects ----
+// ---- SetData specialization for vertex buffer objects ----
 
     template<>
-    inline void Buffer<ION_VERTEX_BUFFER>::SetData(size_t size, Vertex const* data, bool dynamic) const
+    inline void Buffer<ION_VERTEX_BUFFER>::SetData(uint64_t size, Vertex* const data, bool dynamic) const
     {
-        float const*  vertexData = reinterpret_cast<float const*>(data);
+        float* const  vertexData = reinterpret_cast<float* const>(data);
 
         if (dynamic)
             glNamedBufferData(m_id, size, vertexData, GL_DYNAMIC_DRAW);
