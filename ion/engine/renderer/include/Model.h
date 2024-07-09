@@ -44,6 +44,8 @@ namespace ion
 
 		class WavefrontImporter;
 
+		friend class VertexArray;
+
 	public:
 
 						Model(void) = default;
