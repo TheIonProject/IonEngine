@@ -79,7 +79,7 @@ namespace internal::opengl
 
 	inline bool CheckError(const char* _file, uint32_t _line, const char* _exprString, bool verbose = false)
 	{
-		// Check if last instruction did not raise any opengl error flags
+		// Check if last instruction did not raise any OpenGL error flags
 
 		GLuint error = glGetError();
 
@@ -104,15 +104,33 @@ namespace internal::opengl
 
 // Debug mode
 
+// Check if an expression causes an OpenGL error. Logs error if one is found
 #define ION_GL_CHECK(_expression)			internal::opengl::ClearErrors(); _expression; internal::opengl::CheckError(__FILE__, __LINE__, #_expression, false)
+
+// Check if an expression causes an OpenGL error. Logs a verbose description if an error occurs
 #define ION_GL_CHECK_VERBOSE(_expression)	internal::opengl::ClearErrors(); _expression; internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true)
+
+
+#ifdef ION_MSVC_COMPILER
+
+// Calls an MSVC debug break instruction if an OpenGL error is found
+#define ION_GL_BREAK(_expression)			internal::opengl::ClearErrors(); _expression; if(!internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true)) __debugbreak();
+
+#else
+
+// This macro is equivalent to ION_CHECK outside of microsoft's compiler
+#define ION_GL_BREAK(_expression)			ION_CHECK(_expression)
+
+#endif // !ION_MSVC_COMPILER
 
 #else
 
 // Release mode
 
-#define ION_GL_CHECK(_expression)
-#define ION_GL_CHECK_VERBOSE(_expression)
+#define ION_GL_CHECK(_expression)				(void) _expression
+#define ION_GL_CHECK_VERBOSE(_expression)		(void) _expression
+
+#define ION_GL_BREAK(_expression)				(void) _expression
 
 #endif // !NDebug
 
