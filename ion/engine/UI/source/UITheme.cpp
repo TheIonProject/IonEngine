@@ -4,19 +4,7 @@
 
 #define FONT_FILE_PATH "../../../assets/fonts/"
 
-#define BACKGROUND_COLOR			0.121f,0.121f, 0.121f, 1.0f
-#define PRIMARY_COLOR				0.14f, 0.14f, 0.14f, 1.0f
-#define SECONDARY_COLOR				
-#define ACCENT_COLOR				1.0f, 0.0f, 0.0f, 1.0f
-#define TEXT_COLOR					0.568f, 0.568f, 0.568f, 1.0f
-
-#define BACKGROUND_WINDOW_COLOR		0.09f, 0.09f, 0.09f, 1.0f
-#define TAB_BAR_BACKGROUND			0.05f, 0.05f, 0.05f, 1.0f
-
-#define INACTIVE_TAB_COLOR			0.121f,0.121f, 0.121f, 1.0f
-#define ACTIVE_TAB_COLOR			0.22f, 0.22f, 0.22f, 1.0f
-#define HOVERED_TAB_COLOR			0.18f, 0.18f, 0.18f, 1.0f
-
+// Fonts still WIP
 ImFont* ion::Fonts::m_boldFont = nullptr;
 //ImFont* ion::Fonts::m_italicFont = nullptr;
 ImFont* ion::Fonts::m_regularFont = nullptr;
