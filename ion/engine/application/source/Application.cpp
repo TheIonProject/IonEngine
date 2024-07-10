@@ -1,3 +1,25 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: Application.cpp
+
+DESCTIPTION: Logic for application class. Application class handles initialization & updates
+of dependencies such as GLFW, Glad & ImGui.
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #include <iostream>
 #include <exception>
 
@@ -14,6 +36,7 @@ ion::Application::Application(void)
 	m_windowPtr = nullptr;
 	m_windowHeight = 0;
 	m_windowWidth = 0;
+	m_viewport.m_frameBuffer = new FrameBuffer();
 
 	InitApplication();
 }
@@ -24,6 +47,7 @@ ion::Application::~Application(void)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 
+	glfwDestroyWindow(m_windowPtr);
 	glfwTerminate();
 }
 
@@ -47,6 +71,7 @@ void ion::Application::InitApplication(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // TODO: re-add after adding UI (removes top menu bar)
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -64,26 +89,25 @@ void ion::Application::InitApplication(void)
 	if (!m_windowPtr)
 		throw std::exception("Window ptr is null");
 
-	int bufferWidth, bufferHeight;
-	glfwGetFramebufferSize(m_windowPtr, &bufferWidth, &bufferHeight);
+	glfwSetWindowUserPointer(m_windowPtr, this);
+	glfwSetWindowSizeCallback(m_windowPtr, StaticResizeWindowCallback);
 	glfwMakeContextCurrent(m_windowPtr);
 
 	// Check glad init successfully
 	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
 		throw std::exception("GLAD init failed");
 
-	glViewport(0, 0, bufferWidth, bufferHeight);
 	create_triangle(); // Testing triangle
 	create_shaders(); // Test shader
-	m_textureCache.AddTexture("Wall.jpg");
-
-	// Initialize frame buffer
-	m_frameBuffer.InitFrameBuffer();
 
 	// Initialize ImGui
 	InitImGui();
 
+	// Initialize viewport
 	m_viewport.SetViewportMode(ViewportMode::HD_RATIO);
+
+	// Initialize frame buffer
+	m_viewport.m_frameBuffer->InitFrameBuffer();
 }
 
 void ion::Application::InitImGui(void)
@@ -91,13 +115,18 @@ void ion::Application::InitImGui(void)
 	// Initialize ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	
+	// Set flags
 	ImGuiIO& io = ImGui::GetIO(); (void) io;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+	// Editor theme
 	ImGui::StyleColorsDark(); // TODO: replace with own theme
+
+	// Custom theme
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -105,29 +134,38 @@ void ion::Application::InitImGui(void)
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
+	// More ImGui initializing stuff...
 	ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
+
+	// Do not remove this line or viewport goes kaputt on init.
+	glViewport(0, 0, 800, 600);
 }
 
 void ion::Application::UpdateApplication(void)
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-
+	// Clear background & color buffer
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Create new frame for UI
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	ImGui::DockSpaceOverViewport();
-	glBindTexture(GL_TEXTURE_2D, m_textureCache.GetTexture("Wall.jpg").m_id);
 
+	// Enable docking
+	ImGui::DockSpaceOverViewport();
+
+	// UI
 	MainMenuBar();
-	m_viewport.UpdateViewport(m_frameBuffer);
+	m_viewport.UpdateViewport(*m_viewport.m_frameBuffer);
 	ImGui::ShowMetricsWindow();
 
+	// Render UI
 	ImGui::Render();
-
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	// Viewport / docking stuff...
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		GLFWwindow* backup_current_context = glfwGetCurrentContext();
@@ -138,4 +176,22 @@ void ion::Application::UpdateApplication(void)
 
 	glfwSwapBuffers(m_windowPtr);
 	glfwPollEvents();
+}
+
+void ion::Application::StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height)
+{
+	// Function to call Resize window function
+	Application* applicationPtr = static_cast<Application*>(glfwGetWindowUserPointer(windowPtr));
+
+	applicationPtr->ResizeWindowCallback(windowPtr, width, height);
+}
+
+void ion::Application::ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height)
+{
+	// Function to prevent viewport bugging out :'C
+	(void) windowPtr;
+
+	glViewport(0, 0, width, height);
+
+	m_viewport.m_frameBuffer->RescaleFrameBuffer(width, height);
 }

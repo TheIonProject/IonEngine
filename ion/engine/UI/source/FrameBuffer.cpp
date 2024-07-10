@@ -1,3 +1,24 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: FrameBuffer.h
+
+DESCTIPTION: Framebuffer source
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #include <iostream>
 #include <glad/glad.h>
 
@@ -43,7 +64,12 @@ unsigned int ion::FrameBuffer::GetFrameBuffer(void) const noexcept
 
 void ion::FrameBuffer::RescaleFrameBuffer(GLsizei width, GLsizei height)
 {
-	BindTexture(width, height);
+	//BindTexture(width, height);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture, 0);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);

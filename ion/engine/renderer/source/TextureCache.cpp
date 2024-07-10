@@ -1,8 +1,29 @@
+/*
+
+ _____                               _
+|_   _|                             (_)
+  | |  ___  _ __     ___ _ __   __ _ _ _ __   ___
+  | | / _ \| '_ \   / _ \ '_ \ / _` | | '_ \ / _ \
+ _| || (_) | | | | |  __/ | | | (_| | | | | |  __/
+ \___/\___/|_| |_|  \___|_| |_|\__, |_|_| |_|\___|
+								__/ |
+							   |___/
+
+
+NAME: TextureCache.cpp
+
+DESCTIPTION: Initialize, store & get textures
+
+AUTHOR: @MLev29 on GitHub
+
+
+*/
+
 #include <iostream>
 #include "TextureCache.h"
 #include "TextureLoader.h"
 
-#define DEBUG_TEXTURE_CACHE 1
+#define DEBUG_TEXTURE_CACHE 0
 
 ion::Texture ion::TextureCache::AddTexture(std::string textureFileName)
 {
@@ -40,19 +61,40 @@ ion::Texture ion::TextureCache::AddTexture(std::string textureFileName)
 	return lookupTexture->second;
 }
 
-ion::Texture& ion::TextureCache::GetTexture(std::string textureName)
+void ion::TextureCache::BindTexture(std::string textureFileName)
 {
-	std::string filePath = std::string(TEXTURE_PATH) + textureName;
+	std::string filePath = std::string(TEXTURE_PATH) + textureFileName;
+
 	auto getTexture = m_textureMap.find(filePath);
 
 	// Check texture exists
 	if (getTexture == m_textureMap.end())
 	{
-		std::printf("Texture does not exist");
+#if DEBUG_TEXTURE_CACHE == 1
+		std::printf("Texture does not exist\n");
+		__debugbreak();
+#endif
+		return;
 	}
 
-	return getTexture->second;
+	glBindTexture(GL_TEXTURE_2D, getTexture->second.m_id);
 }
+
+//ion::Texture ion::TextureCache::GetTexture(std::string textureName)
+//{
+//	std::string filePath = std::string(TEXTURE_PATH) + textureName;
+//	auto getTexture = m_textureMap.find(filePath);
+//
+//	// Check texture exists
+//	if (getTexture == m_textureMap.end())
+//	{
+//		std::printf("Texture does not exist\n");
+//
+//		return ;
+//	}
+//
+//	return getTexture->second;
+//}
 
 ion::Texture ion::TextureCache::GetTexture(std::string textureName) const noexcept
 {
