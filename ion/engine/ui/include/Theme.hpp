@@ -4,14 +4,6 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 
-#define BACKGROUND_COLOR			0.121f,0.121f, 0.121f, 1.0f
-#define BACKGROUND_WINDOW_COLOR		0.09f, 0.09f, 0.09f, 1.0f
-#define PRIMARY_COLOR				0.14f, 0.14f, 0.14f, 1.0f
-#define SECONDARY_COLOR				
-#define ACCENT_COLOR				
-#define TEXT_COLOR					0.568f, 0.568f, 0.568f, 1.0f
-
-
 namespace ion
 {
 	struct Fonts
@@ -21,8 +13,8 @@ namespace ion
 		static ImFont* m_regularFont;
 	};
 
-	void Color(void);
-	void Style(ImGuiIO*& io);
+	void Color(ImGuiStyle*& style);
+	void Style(ImGuiIO*& io, ImGuiStyle*& style);
 	void UIFont(ImGuiIO*& io);
 
 	void UITheme(void);
