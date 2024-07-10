@@ -30,6 +30,7 @@ AUTHOR: @MLev29 on GitHub
 #include "Application.h"
 #include "TitleBar.h"
 #include "Testing.h"
+#include "Theme.hpp"
 
 ion::Application::Application(void)
 {
@@ -124,15 +125,8 @@ void ion::Application::InitImGui(void)
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	// Editor theme
-	ImGui::StyleColorsDark(); // TODO: replace with own theme
-
-	// Custom theme
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
+	//ImGui::StyleColorsDark(); // TODO: replace with own theme
+	UITheme();
 
 	// More ImGui initializing stuff...
 	ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
