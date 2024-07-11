@@ -6,9 +6,18 @@
 
 namespace ion
 {
-
-	void UITheme(void)
+	struct Fonts
 	{
-		// TODO: add theme
-	}
+		static ImFont* m_boldFont;
+		//static ImFont* m_italicFont;
+		static ImFont* m_regularFont;
+	};
+
+	void Color(ImGuiStyle*& style);
+	void Style(ImGuiIO*& io, ImGuiStyle*& style);
+	void UIFont(ImGuiIO*& io);
+
+	void UITheme(void);
+
+
 }
