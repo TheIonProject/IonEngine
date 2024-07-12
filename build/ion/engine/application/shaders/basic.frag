@@ -2,7 +2,7 @@
 
 out vec4 FragColor;
 
-int main
+void main()
 {
-	FragColor = vec4(0.f, 1.f, 0.f, 1.f);
+	FragColor = vec4(0.0, 1.0, 0.0, 1.0);
 }
