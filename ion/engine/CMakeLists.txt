@@ -20,14 +20,15 @@ cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
 get_filename_component(TARGET_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-# Object and component hierarchies
-#add_subdirectory(ECS)
 
 # Windowing and user interface
 add_subdirectory(UI)
 
-# In-game renderer 
+# In-game renderer
 add_subdirectory(renderer)
+
+# Object and component hierarchies
+add_subdirectory(core)
 
 # Main executable
 add_subdirectory(application)
