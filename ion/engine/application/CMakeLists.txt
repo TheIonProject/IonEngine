@@ -46,8 +46,15 @@ file(GLOB COMMON_FILES
 	${CMAKE_SOURCE_DIR}/ion/*.hpp
 	${CMAKE_SOURCE_DIR}/ion/*.h
 	${CMAKE_SOURCE_DIR}/ion/CMakeLists.txt
+	${CMAKE_SOURCE_DIR}/ion/engine/CMakeLists.txt
 )
 
+file(GLOB_RECURSE SHADER_FILES
+	${CMAKE_CURRENT_BINARY_DIR}/*.shader
+	${CMAKE_CURRENT_BINARY_DIR}/*.vert
+	${CMAKE_CURRENT_BINARY_DIR}/*.frag
+	${CMAKE_CURRENT_BINARY_DIR}/*.glsl
+)
 
 set (TARGET_FILES ${TARGET_HEADER_FILES} ${TARGET_SOURCE_FILES})
 
@@ -61,11 +68,13 @@ source_group("Extra files" FILES ${TARGET_EXTRA_FILES})
 # Files shared by several modules
 source_group("Common" FILES ${COMMON_FILES})
 
+source_group("Shaders" FILES ${SHADER_FILES})
+
 # Create final application exe
 add_executable(${TARGET_NAME})
 
 # Add all gathered files as sources for compilation and VS filters
-target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES} ${TARGET_EXTRA_FILES} ${COMMON_FILES})
+target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES} ${TARGET_EXTRA_FILES} ${COMMON_FILES} ${SHADER_FILES})
 
 target_include_directories(${TARGET_NAME}
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
