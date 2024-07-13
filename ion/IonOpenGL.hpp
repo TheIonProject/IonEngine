@@ -105,7 +105,7 @@ namespace internal::opengl
 // Debug mode
 
 
-#define ION_GL_RUN(_expression)				/*internal::opengl::ClearErrors();*/ _expression
+#define ION_GL_RUN(_expression)				internal::opengl::ClearErrors(); _expression
 #define ION_GL_OK(_expression, _verbose)	internal::opengl::CheckError(__FILE__, __LINE__, #_expression, _verbose)
 
 // Check if an expression causes an OpenGL error. Logs error if one is found
