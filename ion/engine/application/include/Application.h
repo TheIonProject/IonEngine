@@ -43,7 +43,7 @@ namespace ion
 		GLFWwindow* GetWindowPtr(void) const noexcept;
 		GLFWwindow*& GetWindowPtr(void);
 
-		void UpdateApplication(void);
+		void UpdateApplication(float deltaTime);
 
 		static void StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
 		void ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);

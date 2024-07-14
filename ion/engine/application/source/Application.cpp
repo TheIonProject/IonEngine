@@ -136,8 +136,15 @@ void ion::Application::InitImGui(void)
 	glViewport(0, 0, 800, 600);
 }
 
-void ion::Application::UpdateApplication(void)
+void ion::Application::UpdateApplication(float deltaTime)
 {
+	(void) deltaTime;
+
+	glPolygonMode(GL_FRONT, GL_LINE);
+	glPolygonMode(GL_BACK, GL_LINE);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_viewport.m_frameBuffer->GetFrameBuffer());
+	glEnable(GL_DEPTH_TEST);
+
 	// Clear background & color buffer
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
