@@ -46,6 +46,9 @@ namespace ion
 		void UpdateApplication(float deltaTime);
 
 		static void StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
+		static void StaticKeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods);
+
+		void KeyboardCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int mods);
 		void ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
 	private:
 		void InitApplication(void);

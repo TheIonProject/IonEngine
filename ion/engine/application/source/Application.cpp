@@ -34,16 +34,18 @@ AUTHOR: @MLev29 on GitHub
 
 ion::Application::Application(void)
 {
+	// Initialize application variables
 	m_windowPtr = nullptr;
-	m_windowHeight = 0;
-	m_windowWidth = 0;
+	m_windowWidth = 800;
+	m_windowHeight = 600;
 	m_viewport.m_frameBuffer = new FrameBuffer();
-
+	
 	InitApplication();
 }
 
 ion::Application::~Application(void)
 {
+	// Free memory to prevent memory leaks
 	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
@@ -82,7 +84,7 @@ void ion::Application::InitApplication(void)
 	const GLFWvidmode* vidMode = glfwGetVideoMode((GLFWmonitor*) glfwGetPrimaryMonitor());
 	m_windowWidth = vidMode->width;
 	m_windowHeight = vidMode->height;
-
+	
 	// Initialize window pointer
 	m_windowPtr = glfwCreateWindow(m_windowWidth, m_windowHeight, "IonEngine", NULL, NULL);
 
@@ -92,23 +94,33 @@ void ion::Application::InitApplication(void)
 
 	glfwSetWindowUserPointer(m_windowPtr, this);
 	glfwSetWindowSizeCallback(m_windowPtr, StaticResizeWindowCallback);
+	glfwSetKeyCallback(m_windowPtr, StaticKeyboardCallback);
+	
 	glfwMakeContextCurrent(m_windowPtr);
 
 	// Check glad init successfully
 	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
 		throw std::exception("GLAD init failed");
 
-	create_triangle(); // Testing triangle
+	// Enable depth buffer
+	glEnable(GL_DEPTH_TEST);
+
+	// HACK: Create shader currently being used to for 3D object in viewport
+	// This would need to be changed for a more permanent solution
 	create_shaders(); // Test shader
 
 	// Initialize ImGui
 	InitImGui();
 
 	// Initialize viewport
+	m_viewport.InitViewport();
 	m_viewport.SetViewportMode(ViewportMode::HD_RATIO);
 
 	// Initialize frame buffer
 	m_viewport.m_frameBuffer->InitFrameBuffer();
+
+	// Do not remove this line or viewport goes kaputt on init.
+	glViewport(0, 0, 800, 600);
 }
 
 void ion::Application::InitImGui(void)
@@ -124,43 +136,40 @@ void ion::Application::InitImGui(void)
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-	// Editor theme
-	//ImGui::StyleColorsDark(); // TODO: replace with own theme
+	// Set editor theme
 	UITheme();
 
 	// More ImGui initializing stuff...
 	ImGui_ImplGlfw_InitForOpenGL(m_windowPtr, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
-
-	// Do not remove this line or viewport goes kaputt on init.
-	glViewport(0, 0, 800, 600);
 }
 
 void ion::Application::UpdateApplication(float deltaTime)
 {
 	(void) deltaTime;
 
-	glPolygonMode(GL_FRONT, GL_LINE);
-	glPolygonMode(GL_BACK, GL_LINE);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_viewport.m_frameBuffer->GetFrameBuffer());
 	glEnable(GL_DEPTH_TEST);
 
 	// Clear background & color buffer
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Create new frame for UI
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	// Enable docking
+	// Enable docking for UI windows
 	ImGui::DockSpaceOverViewport();
-
+	
 	// UI
 	MainMenuBar();
 	m_viewport.UpdateViewport(*m_viewport.m_frameBuffer);
-	ImGui::ShowMetricsWindow();
+	ImGui::ShowMetricsWindow(); // TODO: debug remove
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
 
 	// Render UI
 	ImGui::Render();
@@ -169,22 +178,39 @@ void ion::Application::UpdateApplication(float deltaTime)
 	// Viewport / docking stuff...
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		GLFWwindow* backupContext = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
+		glfwMakeContextCurrent(backupContext);
 	}
 
+	// Swap front & back buffer
 	glfwSwapBuffers(m_windowPtr);
 	glfwPollEvents();
 }
 
 void ion::Application::StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height)
 {
-	// Function to call Resize window function
+	// Function to call resize window function, used for frame buffer size
 	Application* applicationPtr = static_cast<Application*>(glfwGetWindowUserPointer(windowPtr));
 
 	applicationPtr->ResizeWindowCallback(windowPtr, width, height);
+}
+
+void ion::Application::StaticKeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods)
+{
+	// Function to call keyboard input, used for camera input / movement
+	Application* applicationPtr = static_cast<Application*>(glfwGetWindowUserPointer(windowPtr));
+
+	applicationPtr->KeyboardCallback(windowPtr, key, scanCode, action, mods);
+}
+
+void ion::Application::KeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods)
+{
+	(void) windowPtr;
+
+	// Handle keyboard input for camera
+	m_viewport.m_camera.CameraInput(key, scanCode, action, mods);
 }
 
 void ion::Application::ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height)
