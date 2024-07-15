@@ -24,10 +24,6 @@ AUTHOR: @MLev29 on GitHub
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
-
 #include "Viewport.h"
 #include "TextureCache.h"
 
@@ -46,9 +42,7 @@ namespace ion
 		void UpdateApplication(float deltaTime);
 
 		static void StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
-		static void StaticKeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods);
 
-		void KeyboardCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int mods);
 		void ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
 	private:
 		void InitApplication(void);
@@ -60,5 +54,4 @@ namespace ion
 		int m_windowWidth;
 		int m_windowHeight;
 	};
-
 }

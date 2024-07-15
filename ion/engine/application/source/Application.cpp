@@ -38,7 +38,7 @@ ion::Application::Application(void)
 	m_windowPtr = nullptr;
 	m_windowWidth = 800;
 	m_windowHeight = 600;
-	m_viewport.m_frameBuffer = new FrameBuffer();
+	m_viewport = ion::Viewport(ion::ViewportMode::HD_RATIO);
 	
 	InitApplication();
 }
@@ -94,7 +94,6 @@ void ion::Application::InitApplication(void)
 
 	glfwSetWindowUserPointer(m_windowPtr, this);
 	glfwSetWindowSizeCallback(m_windowPtr, StaticResizeWindowCallback);
-	glfwSetKeyCallback(m_windowPtr, StaticKeyboardCallback);
 	
 	glfwMakeContextCurrent(m_windowPtr);
 
@@ -114,7 +113,6 @@ void ion::Application::InitApplication(void)
 
 	// Initialize viewport
 	m_viewport.InitViewport();
-	m_viewport.SetViewportMode(ViewportMode::HD_RATIO);
 
 	// Initialize frame buffer
 	m_viewport.m_frameBuffer->InitFrameBuffer();
@@ -146,7 +144,8 @@ void ion::Application::InitImGui(void)
 
 void ion::Application::UpdateApplication(float deltaTime)
 {
-	(void) deltaTime;
+	// Process keyboard input
+	m_viewport.m_camera->CameraInput(m_windowPtr, deltaTime);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_viewport.m_frameBuffer->GetFrameBuffer());
 	glEnable(GL_DEPTH_TEST);
@@ -195,22 +194,6 @@ void ion::Application::StaticResizeWindowCallback(GLFWwindow* windowPtr, int wid
 	Application* applicationPtr = static_cast<Application*>(glfwGetWindowUserPointer(windowPtr));
 
 	applicationPtr->ResizeWindowCallback(windowPtr, width, height);
-}
-
-void ion::Application::StaticKeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods)
-{
-	// Function to call keyboard input, used for camera input / movement
-	Application* applicationPtr = static_cast<Application*>(glfwGetWindowUserPointer(windowPtr));
-
-	applicationPtr->KeyboardCallback(windowPtr, key, scanCode, action, mods);
-}
-
-void ion::Application::KeyboardCallback(GLFWwindow* windowPtr, int key, int scanCode, int action, int mods)
-{
-	(void) windowPtr;
-
-	// Handle keyboard input for camera
-	m_viewport.m_camera.CameraInput(key, scanCode, action, mods);
 }
 
 void ion::Application::ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height)
