@@ -18,22 +18,30 @@ inline GLuint g_shader;
 inline const char* vertex_shader_code = R"*(
 	#version 450
 	
-	layout (location = 0) in vec3 pos;
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec2 aTexCoord;
+	
+	out vec2 TexCoord;
+	
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
 	
 	void main()
 	{
-		gl_Position = vec4(0.9*pos.x, 0.9*pos.y, 0.5*pos.z, 1.0);
+		gl_Position = projection * view * model * vec4(aPos, 1.0f);
+		TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 	}
 )*";
 
 inline const char* fragment_shader_code = R"*(
 	#version 450
 	
-	out vec4 color;
+	out vec4 FragColor;
 	
 	void main()
 	{
-		color = vec4(0.0, 1.0, 0.0, 1.0);
+		FragColor = vec4(0.0f, 0.0f, 1.f, 1.0f);
 	}
 )*";
 
