@@ -47,10 +47,11 @@ namespace ion
 		~Viewport(void);
 
 		ViewportMode GetViewportMode(void) const noexcept;
+		bool GetWindowActive(void) const noexcept;
 		void SetViewportMode(ViewportMode const viewportMode);
 
 		void InitViewport(void);
-		void UpdateViewport(FrameBuffer& frameBuffer);
+		void UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuffer);
 
 		
 		FrameBuffer* m_frameBuffer;
@@ -68,5 +69,6 @@ namespace ion
 		int m_width;
 		int m_height;
 		bool m_isOpened;
+		bool m_isWindowActive;
 	};
 }

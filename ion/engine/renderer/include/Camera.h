@@ -38,6 +38,7 @@ namespace ion
 
 		void CameraUI(void);
 		void CameraInput(GLFWwindow* windowPtr, float deltaTime);
+		void MouseMotion(LibMath::Vector2f const& cursorPos);
 	private:
 		// View matrix
 		LibMath::Vector3f m_position;

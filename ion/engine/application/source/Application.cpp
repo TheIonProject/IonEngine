@@ -144,8 +144,14 @@ void ion::Application::InitImGui(void)
 
 void ion::Application::UpdateApplication(float deltaTime)
 {
-	// Process keyboard input
-	m_viewport.m_camera->CameraInput(m_windowPtr, deltaTime);
+	// Check scene view is an active window
+	if (m_viewport.GetWindowActive())
+	{
+		// Process keyboard input
+		m_viewport.m_camera->CameraInput(m_windowPtr, deltaTime);
+
+		
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_viewport.m_frameBuffer->GetFrameBuffer());
 	glEnable(GL_DEPTH_TEST);
@@ -164,7 +170,7 @@ void ion::Application::UpdateApplication(float deltaTime)
 	
 	// UI
 	MainMenuBar();
-	m_viewport.UpdateViewport(*m_viewport.m_frameBuffer);
+	m_viewport.UpdateViewport(m_windowPtr, *m_viewport.m_frameBuffer);
 	ImGui::ShowMetricsWindow(); // TODO: debug remove
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

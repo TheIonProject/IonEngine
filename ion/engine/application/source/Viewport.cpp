@@ -45,6 +45,7 @@ ion::Viewport::Viewport(ViewportMode const viewportMode)
 	m_height = 0;
 	m_position = ImVec2(0.0f, 0.0f);
 	m_isOpened = (viewportMode == ViewportMode::CUSTOM_RATIO);
+	m_isWindowActive = false;
 }
 
 ion::Viewport::Viewport(Viewport const& viewport)
@@ -57,6 +58,7 @@ ion::Viewport::Viewport(Viewport const& viewport)
 	m_height = viewport.m_height;
 	m_vertexArray = viewport.m_vertexArray;
 	m_isOpened = viewport.m_isOpened;
+	m_isWindowActive = viewport.m_isWindowActive;
 }
 
 ion::Viewport::~Viewport(void)
@@ -70,6 +72,11 @@ ion::Viewport::~Viewport(void)
 ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
 {
 	return m_currentMode;
+}
+
+bool ion::Viewport::GetWindowActive(void) const noexcept
+{
+	return m_isWindowActive;
 }
 
 void ion::Viewport::SetViewportMode(ViewportMode const viewportMode)
@@ -89,8 +96,9 @@ void ion::Viewport::InitViewport(void)
 	m_camera = new ion::Camera(math::Vector3f(0.0f, 1.0f, 3.0f), 1.0f);
 }
 
-void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
+void ion::Viewport::UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuffer)
 {
+	(void) windowPtr;
 	// Get viewport 
 	ImVec2 region = ImGui::GetContentRegionAvail();
 
@@ -112,6 +120,19 @@ void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
 	m_camera->CameraUI();
 	
 	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+
+	// Update if window is active	
+	m_isWindowActive = ImGui::IsWindowFocused();
+
+
+	//ImVec2 windowPos = ImGui::GetWindowPos();
+	//ImVec2 windowPos = ImGui::GetMousePos();
+	//math::Vector2d windowPosDouble(windowPos.x, windowPos.y);
+	//glfwGetCursorPos(windowPtr, &windowPosDouble[0], &windowPosDouble[1]);
+	//m_camera->MouseMotion(math::Vector2f(
+	//	static_cast<float>(windowPosDouble[0]), 
+	//	static_cast<float>(windowPosDouble[1]))
+	//);
 
 	OptionBarUI();
 	SetViewportSize();

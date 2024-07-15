@@ -103,3 +103,8 @@ void ion::Camera::CameraInput(GLFWwindow* windowPtr, float deltaTime)
 	else if (glfwGetKey(windowPtr, GLFW_KEY_E) == GLFW_PRESS)
 		m_position += math::Vector3f::Up() * m_speed * deltaTime;
 }
+
+void ion::Camera::MouseMotion(LibMath::Vector2f const& cursorPos)
+{
+	std::printf("%f, %f\n", cursorPos[0], cursorPos[1]);
+}
