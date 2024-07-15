@@ -98,13 +98,12 @@ void ion::Camera::CameraUI(void)
 	ImGui::InputFloat("Yaw", &m_yaw);
 	ImGui::InputFloat("Pitch", &m_pitch);
 	
-
-
 	ImGui::End();
 }
 
 void ion::Camera::CameraInput(GLFWwindow* windowPtr, float deltaTime)
 {
+	// Keyboard inputs
 	if (glfwGetKey(windowPtr, GLFW_KEY_W) == GLFW_PRESS)
 		m_position += m_forward * m_speed * deltaTime;
 	else if (glfwGetKey(windowPtr, GLFW_KEY_S) == GLFW_PRESS)
@@ -126,28 +125,26 @@ void ion::Camera::MouseMotion(LibMath::Vector2f const& cursorPos, float deltaTim
 	// Calculate delta mouse position
 	math::Vector2f deltaPos = (cursorPos - m_lastCursorPos) * deltaTime;
 	
+	// Prevent large numbers such as garbage data for yaw & pitch
+	if (math::Absolute(deltaPos[0]) > 3.0f)
+		deltaPos[0] = (deltaPos[0] < 0.0f) ? -3.0f : 3.0f;
+	if (math::Absolute(deltaPos[1]) > 3.0f)
+		deltaPos[1] = (deltaPos[1] < 0.0f) ? -3.0f : 3.0f;
+
 	// Assign last cursor value
 	m_lastCursorPos = cursorPos;
 
 	// Update yaw & pitch
-	m_yaw += deltaPos[0];
-	m_pitch += -deltaPos[1];
+	m_yaw += deltaPos[0] * m_angularSpeed;
+	m_pitch -= deltaPos[1] * m_angularSpeed;
 
-	// HACK: temporary solution to deal with garbage data
-	if (m_yaw > 360.0f || m_yaw < -360.0f)
-		m_yaw = 0.0f;	
-	if (m_pitch > 360.0f || m_pitch < -360.0f)
-		m_pitch = 0.0f;
-
+	// Wrap yaw & pitch from 0 - 360 degrees
 	m_yaw = ((int) m_yaw % 360) + (m_yaw - (int) m_yaw);
 	m_pitch = ((int) m_pitch % 360) + (m_pitch - (int) m_pitch);
 
-
-	//std::printf("yaw: %f, pitch: %f\n", m_yaw, m_pitch);
-
 	// Convert degree to radian
-	const float yawRad = (m_yaw * DEG2RAD) * m_angularSpeed;
-	const float pitchRad = (m_pitch * DEG2RAD) * m_angularSpeed;
+	const float yawRad = (m_yaw * DEG2RAD);
+	const float pitchRad = (m_pitch * DEG2RAD);
 
 	// Rotate camera via pitch & yaw values
 	m_forward = math::Vector3f(
