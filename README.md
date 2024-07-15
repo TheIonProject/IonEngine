@@ -1,7 +1,11 @@
 # IonEngine
 
-Coming soon...
-
+### Current Engine Features
+- Add & load Textures
+- Import, export & load mesh
+- multiple viewports 
+- Camera (WIP)
+- Entity component system (WIP)
 
 ### Dependencies
 | Dependency | Version|

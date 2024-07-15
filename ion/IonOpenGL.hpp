@@ -104,20 +104,24 @@ namespace internal::opengl
 
 // Debug mode
 
+
+#define ION_GL_RUN(_expression)				/*internal::opengl::ClearErrors();*/ _expression
+#define ION_GL_OK(_expression, _verbose)	internal::opengl::CheckError(__FILE__, __LINE__, #_expression, _verbose)
+
 // Check if an expression causes an OpenGL error. Logs error if one is found
-#define ION_GL_CHECK(_expression)			internal::opengl::ClearErrors(); _expression; internal::opengl::CheckError(__FILE__, __LINE__, #_expression, false)
+#define ION_GL_CHECK(_expression)			ION_GL_RUN(_expression); ION_GL_OK(_expression, false)
 
 // Check if an expression causes an OpenGL error. Logs a verbose description if an error occurs
-#define ION_GL_CHECK_VERBOSE(_expression)	internal::opengl::ClearErrors(); _expression; internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true)
+#define ION_GL_CHECK_VERBOSE(_expression)	ION_GL_RUN(_expression); ION_GL_OK(_expression, true)
 
 
 #ifdef ION_MSVC_COMPILER
 
 // Calls an MSVC debug break instruction if an OpenGL error is found
-#define ION_GL_BREAK(_expression)			internal::opengl::ClearErrors(); _expression; if(!internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true)) __debugbreak();
-#define ION_GL_ASSERT(_expression)			internal::opengl::ClearErrors(); _expression; ION_ASSERT(internal::opengl::CheckError(__FILE__, __LINE__, #_expression, true))
+#define ION_GL_BREAK(_expression)			ION_GL_RUN(_expression); if(!ION_GL_OK(_expression, false)) __debugbreak()
+#define ION_GL_ASSERT(_expression)			ION_GL_RUN(_expression); ION_ASSERT(ION_GL_OK(_expression, true))
 
-#else
+#else // ION_MSVC_COMPILER not defined
 
 // This macro is equivalent to ION_CHECK outside of microsoft's compiler
 #define ION_GL_BREAK(_expression)			ION_CHECK(_expression)
@@ -127,6 +131,11 @@ namespace internal::opengl
 #else
 
 // Release mode
+
+
+#define ION_GL_RUN(_expression)					(void) _expression
+#define ION_GL_OK(_expression, _verbose)		(void) _expression
+
 
 #define ION_GL_CHECK(_expression)				(void) _expression
 #define ION_GL_CHECK_VERBOSE(_expression)		(void) _expression
