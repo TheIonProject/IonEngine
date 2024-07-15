@@ -35,19 +35,22 @@ namespace ion
 
 		LibMath::Matrix4f GetPerspectiveMatrix(float near, float far, float fovDeg, float aspect) const noexcept;
 		LibMath::Matrix4f GetViewMatrix(void);
+		void SetLastCursorPos(LibMath::Vector2f const& position);
 
 		void CameraUI(void);
 		void CameraInput(GLFWwindow* windowPtr, float deltaTime);
-		void MouseMotion(LibMath::Vector2f const& cursorPos);
+		void MouseMotion(LibMath::Vector2f const& cursorPos, float deltaTime);
 	private:
 		// View matrix
 		LibMath::Vector3f m_position;
 		LibMath::Vector3f m_up;
 		LibMath::Vector3f m_right;
 		LibMath::Vector3f m_forward;
+		LibMath::Vector2f m_lastCursorPos;
 
 		// Transformation
 		float m_speed;
+		float m_angularSpeed;
 		float m_yaw;
 		float m_pitch;
 		

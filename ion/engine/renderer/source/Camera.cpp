@@ -34,6 +34,7 @@ ion::Camera::Camera(LibMath::Vector3f position, float speed)
 	m_right = (m_forward.Cross(m_up)).Normalized();
 
 	m_speed = speed;
+	m_angularSpeed = 5.0f;
 	m_yaw = 0.0f;
 	m_pitch = 0.0f;
 }
@@ -75,13 +76,29 @@ LibMath::Matrix4f ion::Camera::GetViewMatrix(void)
 	return math::Matrix4f(viewValues);
 }
 
+void ion::Camera::SetLastCursorPos(LibMath::Vector2f const& position)
+{
+	m_lastCursorPos = position;
+}
+
 void ion::Camera::CameraUI(void)
 {
 	ImGui::Begin("Camera");
+
+	ImGui::SeparatorText("Config");
+	ImGui::InputFloat("Speed", &m_speed);
+	ImGui::InputFloat("Rotation speed", &m_angularSpeed);
 	
-	ImGui::SliderFloat("X view", &m_position[0], -10.0f, 10.0f);
-	ImGui::SliderFloat("Y view", &m_position[1], -10.0f, 10.0f);
-	ImGui::SliderFloat("Z view", &m_position[2], -10.0f, 10.0f);
+	ImGui::SeparatorText("Position");
+	ImGui::InputFloat("X position", &m_position[0]);
+	ImGui::InputFloat("Y position", &m_position[1]);
+	ImGui::InputFloat("Z position", &m_position[2]);
+
+	ImGui::SeparatorText("Rotation");
+	ImGui::InputFloat("Yaw", &m_yaw);
+	ImGui::InputFloat("Pitch", &m_pitch);
+	
+
 
 	ImGui::End();
 }
@@ -104,7 +121,41 @@ void ion::Camera::CameraInput(GLFWwindow* windowPtr, float deltaTime)
 		m_position += math::Vector3f::Up() * m_speed * deltaTime;
 }
 
-void ion::Camera::MouseMotion(LibMath::Vector2f const& cursorPos)
+void ion::Camera::MouseMotion(LibMath::Vector2f const& cursorPos, float deltaTime)
 {
-	std::printf("%f, %f\n", cursorPos[0], cursorPos[1]);
+	// Calculate delta mouse position
+	math::Vector2f deltaPos = (cursorPos - m_lastCursorPos) * deltaTime;
+	
+	// Assign last cursor value
+	m_lastCursorPos = cursorPos;
+
+	// Update yaw & pitch
+	m_yaw += deltaPos[0];
+	m_pitch += -deltaPos[1];
+
+	// HACK: temporary solution to deal with garbage data
+	if (m_yaw > 360.0f || m_yaw < -360.0f)
+		m_yaw = 0.0f;	
+	if (m_pitch > 360.0f || m_pitch < -360.0f)
+		m_pitch = 0.0f;
+
+	m_yaw = ((int) m_yaw % 360) + (m_yaw - (int) m_yaw);
+	m_pitch = ((int) m_pitch % 360) + (m_pitch - (int) m_pitch);
+
+
+	//std::printf("yaw: %f, pitch: %f\n", m_yaw, m_pitch);
+
+	// Convert degree to radian
+	const float yawRad = (m_yaw * DEG2RAD) * m_angularSpeed;
+	const float pitchRad = (m_pitch * DEG2RAD) * m_angularSpeed;
+
+	// Rotate camera via pitch & yaw values
+	m_forward = math::Vector3f(
+		cosf(yawRad) * cosf(pitchRad),
+		sinf(pitchRad),
+		sinf(yawRad) * cosf(pitchRad)
+	).Normalized();
+
+	m_right = (m_forward.Cross(math::Vector3f::Up())).Normalized();
+	m_up = (m_right.Cross(m_forward)).Normalized();
 }

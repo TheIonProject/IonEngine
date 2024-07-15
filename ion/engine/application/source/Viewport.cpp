@@ -74,6 +74,13 @@ ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
 	return m_currentMode;
 }
 
+LibMath::Vector2f ion::Viewport::GetMousePosition(void) const noexcept
+{
+	ImVec2 cursorPos = ImGui::GetMousePos();
+
+	return LibMath::Vector2f(cursorPos.x, cursorPos.y);
+}
+
 bool ion::Viewport::GetWindowActive(void) const noexcept
 {
 	return m_isWindowActive;
@@ -123,16 +130,6 @@ void ion::Viewport::UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuff
 
 	// Update if window is active	
 	m_isWindowActive = ImGui::IsWindowFocused();
-
-
-	//ImVec2 windowPos = ImGui::GetWindowPos();
-	//ImVec2 windowPos = ImGui::GetMousePos();
-	//math::Vector2d windowPosDouble(windowPos.x, windowPos.y);
-	//glfwGetCursorPos(windowPtr, &windowPosDouble[0], &windowPosDouble[1]);
-	//m_camera->MouseMotion(math::Vector2f(
-	//	static_cast<float>(windowPosDouble[0]), 
-	//	static_cast<float>(windowPosDouble[1]))
-	//);
 
 	OptionBarUI();
 	SetViewportSize();

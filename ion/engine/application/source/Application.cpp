@@ -147,10 +147,15 @@ void ion::Application::UpdateApplication(float deltaTime)
 	// Check scene view is an active window
 	if (m_viewport.GetWindowActive())
 	{
-		// Process keyboard input
+		// Process mouse & keyboard input for scene view
+		glfwSetInputMode(m_windowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		m_viewport.m_camera->CameraInput(m_windowPtr, deltaTime);
-
-		
+		m_viewport.m_camera->MouseMotion(m_viewport.GetMousePosition(), deltaTime);
+	}
+	else
+	{
+		m_viewport.m_camera->SetLastCursorPos(m_viewport.GetMousePosition());
+		glfwSetInputMode(m_windowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_viewport.m_frameBuffer->GetFrameBuffer());

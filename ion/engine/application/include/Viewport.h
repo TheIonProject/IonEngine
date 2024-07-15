@@ -24,6 +24,7 @@ AUTHOR: @MLev29 on GitHub
 #include <imgui/imgui.h>
 
 #include "math/Matrix4.hpp"
+#include "math/Vector3.hpp"
 
 #include "FrameBuffer.h"
 #include "VertexArray.h"
@@ -47,13 +48,14 @@ namespace ion
 		~Viewport(void);
 
 		ViewportMode GetViewportMode(void) const noexcept;
+		LibMath::Vector2f GetMousePosition(void) const noexcept;
 		bool GetWindowActive(void) const noexcept;
+
 		void SetViewportMode(ViewportMode const viewportMode);
 
 		void InitViewport(void);
 		void UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuffer);
 
-		
 		FrameBuffer* m_frameBuffer;
 		Camera* m_camera;
 	private:
