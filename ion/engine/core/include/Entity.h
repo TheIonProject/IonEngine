@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-#include"IComponent.h"
+#include "Component.h"
 #include "ComponentGeneric.h"
 //#include "Component.h"
 

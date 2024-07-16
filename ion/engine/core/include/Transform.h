@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IComponent.h"
+#include "Component.h"
 
 #include "math/Vector3.hpp"
 #include "math/Matrix4.hpp"
@@ -18,6 +18,8 @@ namespace ion
 
 		math::Matrix4f		LocalMatrix(void)		const;
 		math::Matrix4f		GlobalMatrix(void)		const;
+
+
 
 	private:
 
