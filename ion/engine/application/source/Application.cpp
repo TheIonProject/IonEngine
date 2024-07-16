@@ -39,7 +39,7 @@ ion::Application::Application(void)
 	m_windowWidth = 800;
 	m_windowHeight = 600;
 	m_viewport = ion::Viewport(ion::ViewportMode::HD_RATIO);
-	
+
 	InitApplication();
 }
 
@@ -84,7 +84,7 @@ void ion::Application::InitApplication(void)
 	const GLFWvidmode* vidMode = glfwGetVideoMode((GLFWmonitor*) glfwGetPrimaryMonitor());
 	m_windowWidth = vidMode->width;
 	m_windowHeight = vidMode->height;
-	
+
 	// Initialize window pointer
 	m_windowPtr = glfwCreateWindow(m_windowWidth, m_windowHeight, "IonEngine", NULL, NULL);
 
@@ -93,8 +93,8 @@ void ion::Application::InitApplication(void)
 		throw std::exception("Window ptr is null");
 
 	glfwSetWindowUserPointer(m_windowPtr, this);
-	glfwSetWindowSizeCallback(m_windowPtr, StaticResizeWindowCallback);
-	
+	//glfwSetWindowSizeCallback(m_windowPtr, StaticResizeWindowCallback);
+
 	glfwMakeContextCurrent(m_windowPtr);
 
 	// Check glad init successfully
@@ -126,7 +126,7 @@ void ion::Application::InitImGui(void)
 	// Initialize ImGui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	
+
 	// Set flags
 	ImGuiIO& io = ImGui::GetIO(); (void) io;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
@@ -172,12 +172,12 @@ void ion::Application::UpdateApplication(float deltaTime)
 
 	// Enable docking for UI windows
 	ImGui::DockSpaceOverViewport();
-	
+
 	// UI
 	MainMenuBar();
 	m_viewport.UpdateViewport(m_windowPtr, *m_viewport.m_frameBuffer);
 	ImGui::ShowMetricsWindow(); // TODO: debug remove
-	
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 
