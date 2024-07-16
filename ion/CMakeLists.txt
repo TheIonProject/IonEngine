@@ -25,9 +25,9 @@ include(FetchContent)
 
 FetchContent_Declare(
 	mathlib
-	GIT_REPOSITORY			https://github.com/TheIonProject/mathlib.git		# Fetch our math library from github
-	GIT_TAG					ion													# Get 'ion' branch specifically
-	GIT_SHALLOW				ON													# Allow branch names as GIT_TAG argument
+	GIT_REPOSITORY			https://github.com/torrra/mathlib		# Fetch our math library from github
+	GIT_TAG					main									# Get main branch
+	GIT_SHALLOW				ON										# Allow branch names as GIT_TAG argument
 )
 
 

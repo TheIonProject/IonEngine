@@ -169,7 +169,7 @@ internal::Log(true, __FILE__, __LINE__, _message)
 
 
 #define ION_CLEAR_LOGS()\
-std::ofstream ofs("logs/logs.txt", std::ios::out | std::ios::trunc); (void) ofs
+{std::ofstream ofs("logs/logs.txt", std::ios::out | std::ios::trunc);  ofs.close();}
 
 
 #define ION_SETUP_LOGS()\
