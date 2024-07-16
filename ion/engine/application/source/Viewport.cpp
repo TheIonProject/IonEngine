@@ -26,40 +26,47 @@ AUTHOR: @MLev29 on GitHub
 #include <GLFW/glfw3.h>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
+
+#include "math/Matrix4.hpp"
 
 #include "Viewport.h"
 #include "Testing.h"
+#include "Model.h"
 
-#define DEBUG_VIEWPORT 1
-
-
-ion::Viewport::Viewport(void)
-{
-	m_frameBuffer = nullptr;
-	m_currentMode = ViewportMode::FILL_WINDOW;
-	m_prevMode = m_currentMode;
-	m_width = 0;
-	m_height = 0;
-	m_position = ImVec2(0.0f, 0.0f);
-	m_isOpened = false;
-}
+#define DEBUG_VIEWPORT 0
 
 ion::Viewport::Viewport(ViewportMode const viewportMode)
 {
 	m_frameBuffer = nullptr;
+	m_camera = nullptr;
 	m_currentMode = viewportMode;
 	m_prevMode = m_currentMode;
 	m_width = 0;
 	m_height = 0;
 	m_position = ImVec2(0.0f, 0.0f);
 	m_isOpened = (viewportMode == ViewportMode::CUSTOM_RATIO);
+	m_isWindowActive = false;
+}
+
+ion::Viewport::Viewport(Viewport const& viewport)
+{
+	m_frameBuffer = viewport.m_frameBuffer;
+	m_camera = viewport.m_camera;
+	m_currentMode = viewport.m_currentMode;
+	m_prevMode = viewport.m_prevMode;
+	m_width = viewport.m_width;
+	m_height = viewport.m_height;
+	m_vertexArray = viewport.m_vertexArray;
+	m_isOpened = viewport.m_isOpened;
+	m_isWindowActive = viewport.m_isWindowActive;
 }
 
 ion::Viewport::~Viewport(void)
 {
+	// Free memory to prevent memory leaks
 	delete m_frameBuffer;
+	delete m_camera;
+	delete m_vertexArray;
 }
 
 ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
@@ -67,22 +74,62 @@ ion::ViewportMode ion::Viewport::GetViewportMode(void) const noexcept
 	return m_currentMode;
 }
 
+LibMath::Vector2f ion::Viewport::GetMousePosition(void) const noexcept
+{
+	ImVec2 cursorPos = ImGui::GetMousePos();
+
+	return LibMath::Vector2f(cursorPos.x, cursorPos.y);
+}
+
+bool ion::Viewport::GetWindowActive(void) const noexcept
+{
+	return m_isWindowActive;
+}
+
 void ion::Viewport::SetViewportMode(ViewportMode const viewportMode)
 {
 	m_currentMode = viewportMode;
 }
 
-void ion::Viewport::UpdateViewport(FrameBuffer& frameBuffer)
+void ion::Viewport::InitViewport(void)
 {
-	frameBuffer.Bind();
-	glUseProgram(g_shader);
-	glBindVertexArray(g_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glBindVertexArray(0);
-	glUseProgram(0);
-	frameBuffer.UnBind();
+	// Initialize mesh
+	Model model;
+	model.ImportWavefront("../../../assets/models/cube.obj");
+	
+	// Initialize pointers
+	m_frameBuffer = new ion::FrameBuffer();
+	m_vertexArray = new ion::VertexArray(model);
+	m_camera = new ion::Camera(math::Vector3f(0.0f, 1.0f, 3.0f), 1.0f);
+}
 
-	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
+void ion::Viewport::UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuffer)
+{
+	(void) windowPtr;
+	// Get viewport 
+	ImVec2 region = ImGui::GetContentRegionAvail();
+
+	glUseProgram(g_shader);
+	
+	// Camera matrix to make MVP matrix
+	math::Matrix4f model(1.0f);
+	math::Matrix4f view = m_camera->GetViewMatrix();
+	math::Matrix4f projection = m_camera->GetPerspectiveMatrix(0.1f, 100.0f, 60.0f, region.x / region.y);
+
+	glUniformMatrix4fv(glGetUniformLocation(g_shader, "model"), 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(g_shader, "view"), 1, GL_FALSE, &view[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(g_shader, "projection"), 1, GL_FALSE, &projection[0][0]);
+
+	// Model
+	m_vertexArray->Draw();
+	glBindVertexArray(0);
+
+	m_camera->CameraUI();
+	
+	ImGui::Begin("Editor View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+
+	// Update if window is active	
+	m_isWindowActive = ImGui::IsWindowFocused();
 
 	OptionBarUI();
 	SetViewportSize();
@@ -108,6 +155,7 @@ void ion::Viewport::SetViewportSize(void)
 	const int originalWidth = m_width;
 	const int originalHeight = m_height;
 
+	// Set viewport mode
 	switch (m_currentMode)
 	{
 	case ViewportMode::HD_RATIO:
@@ -133,7 +181,7 @@ void ion::Viewport::ViewportPosition(void)
 	ImVec2 regionSize = ImGui::GetContentRegionAvail();
 
 	m_position.x = pos.x;
-	// TODO: line below may be brocken
+	// TODO: line below may be broken
 	m_position.y = pos.y + (0.5f * (regionSize.y - m_height));
 }
 

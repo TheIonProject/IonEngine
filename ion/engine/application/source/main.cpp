@@ -1,6 +1,7 @@
 //#include <filesystem>
 
 #include "Application.h"
+#include "Timer.hpp"
 
 #include "IonDebug.hpp"
 
@@ -23,10 +24,12 @@ int main(void)
 		ION_SETUP_LOGS();
 
 		ion::Application application;
+		ion::Timer timer;
 
 		while (!glfwWindowShouldClose(application.GetWindowPtr()))
 		{
-			application.UpdateApplication();
+			timer.CalcDeltaTime();
+			application.UpdateApplication(timer.GetDeltaTime());
 		}
 
 		std::cout << glGetError() << std::endl;

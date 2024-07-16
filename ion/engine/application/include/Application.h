@@ -24,10 +24,6 @@ AUTHOR: @MLev29 on GitHub
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
-
 #include "Viewport.h"
 #include "TextureCache.h"
 
@@ -43,9 +39,10 @@ namespace ion
 		GLFWwindow* GetWindowPtr(void) const noexcept;
 		GLFWwindow*& GetWindowPtr(void);
 
-		void UpdateApplication(void);
+		void UpdateApplication(float deltaTime);
 
 		static void StaticResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
+
 		void ResizeWindowCallback(GLFWwindow* windowPtr, int width, int height);
 	private:
 		void InitApplication(void);
@@ -57,5 +54,4 @@ namespace ion
 		int m_windowWidth;
 		int m_windowHeight;
 	};
-
 }

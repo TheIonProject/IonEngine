@@ -21,7 +21,14 @@ AUTHOR: @MLev29 on GitHub
 
 #pragma once
 
+#include <imgui/imgui.h>
+
+#include "math/Matrix4.hpp"
+#include "math/Vector3.hpp"
+
 #include "FrameBuffer.h"
+#include "VertexArray.h"
+#include "Camera.h"
 
 namespace ion
 {
@@ -35,26 +42,35 @@ namespace ion
 	class Viewport
 	{
 	public:
-		Viewport(void);
+		Viewport(void) = default;
 		Viewport(ViewportMode const viewportMode);
+		Viewport(Viewport const& viewport);
 		~Viewport(void);
 
 		ViewportMode GetViewportMode(void) const noexcept;
+		LibMath::Vector2f GetMousePosition(void) const noexcept;
+		bool GetWindowActive(void) const noexcept;
+
 		void SetViewportMode(ViewportMode const viewportMode);
 
-		void UpdateViewport(FrameBuffer& frameBuffer);
+		void InitViewport(void);
+		void UpdateViewport(GLFWwindow* windowPtr, FrameBuffer& frameBuffer);
+
 		FrameBuffer* m_frameBuffer;
+		Camera* m_camera;
 	private:
 		void SetViewportSize(void);
 		void ViewportPosition(void);
 		void OptionBarUI(void);
 		void CustomAspectModal(int const originalWidth, int const originalHeight);
 
+		VertexArray* m_vertexArray = nullptr;
 		ImVec2 m_position;
 		ViewportMode m_currentMode;
 		ViewportMode m_prevMode;
 		int m_width;
 		int m_height;
 		bool m_isOpened;
+		bool m_isWindowActive;
 	};
 }
