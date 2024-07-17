@@ -55,4 +55,8 @@ tags
 # Notepad++ backup folders
 /**/nppBackup/
 
+# CLion generated files
+.idea/
+cmake-build-debug/
+
 # Source: https://github.com/github/gitignore/tree/main
