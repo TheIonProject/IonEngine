@@ -20,10 +20,14 @@ namespace ion
 		math::Matrix4f		GlobalMatrix(void)		const;
 
 
+		void				UpdateGlobalMatrix(void);
+
+		math::Vector3f&		Position(void);
+		math::Vector3f&		Rotation(void);
+		math::Vector3f&		Scale(void);
 
 	private:
 
-		void				UpdateGlobalMatrix(void);
 		void				UpdateLocalMatrix(void);
 
 
@@ -35,6 +39,8 @@ namespace ion
 		math::Vector3f		m_localRotation{ 0.f };
 
 		int32_t				m_parent = IComponent::EPA_INVALID_PARENT;
+
+		friend class EntityManager;
 
 	};
 
