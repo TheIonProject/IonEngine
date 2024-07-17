@@ -5,25 +5,23 @@ namespace ion
 {
 	math::Matrix4f	Transform::LocalMatrix() const
 	{
-		math::Matrix4f result(1.f);
+		math::Matrix4f scale(1.f);
 
-		result[0][0] = m_localScale[0];
-		result[1][1] = m_localScale[1];
-		result[2][2] = m_localScale[2];
+		scale[0][0] = m_localScale[0];
+		scale[1][1] = m_localScale[1];
+		scale[2][2] = m_localScale[2];
 
 
 		math::Matrix4f rotation = math::Matrix4f::RotationMatrix(m_localRotation);
 
 
-		result = rotation * result;
-
 		math::Matrix4f translation(1.f);
 
-		translation[0][3] = m_localPosition[0];
-		translation[0][3] = m_localPosition[1];
-		translation[0][3] = m_localPosition[2];
+		translation[3][0] = m_localPosition[0];
+		translation[3][1] = m_localPosition[1];
+		translation[3][2] = m_localPosition[2];
 
-		return translation * result;
+		return  translation * rotation * scale;
 	}
 
 
@@ -33,6 +31,23 @@ namespace ion
 		return m_globalTransform;
 
 	}
+
+
+	math::Vector3f& Transform::Position(void)
+	{
+		return m_localPosition;
+	}
+
+	math::Vector3f& Transform::Rotation(void)
+	{
+		return m_localRotation;
+	}
+
+	math::Vector3f& Transform::Scale(void)
+	{
+		return m_localScale;
+	}
+
 
 	void Transform::UpdateLocalMatrix(void)
 	{
