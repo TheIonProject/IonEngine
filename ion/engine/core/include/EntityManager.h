@@ -64,7 +64,10 @@ namespace ion
 		{
 			int32_t parentComponent = m_transformArray.GetEntityComponentIndex(parentID);
 
-			return m_transformArray.EmplaceBack(entity.Index(), parentComponent);
+			Transform& newTransform = m_transformArray.EmplaceBack(entity.Index(), parentComponent);
+
+			newTransform.m_parent = parentComponent;
+			return newTransform;
 		}
 
 		return m_transformArray.EmplaceBack(entity.Index(), IComponent::EPA_INVALID_PARENT);
