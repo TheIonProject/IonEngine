@@ -117,11 +117,73 @@ namespace ion
 	}
 
 
-	void Shader::Use(void)
+	void Shader::Use(void) const
 	{
 		glUseProgram(m_id);
 	}
 
+	void Shader::SetUniform(const char* name, int value) const
+	{
+		glUniform1i(glGetUniformLocation(m_id, name), value);
+	}
+
+	void Shader::SetUniform(const char* name, float value) const
+	{
+		glUniform1f(glGetUniformLocation(m_id, name), value);
+	}
+
+	void Shader::SetUniform(const char* name, int count, float* values) const
+	{
+		glUniform1fv(glGetUniformLocation(m_id, name), count, values);
+	}
+
+	void Shader::SetUniform(const char* name, int count, int* values) const
+	{
+		glUniform1iv(glGetUniformLocation(m_id, name), count, values);
+	}
+
+	void Shader::SetUniform(const char* name, const math::Vector3f& values) const
+	{
+		glUniform3f(glGetUniformLocation(m_id, name), values.GetX(), values.GetY(), values.GetZ());
+	}
+
+	void Shader::SetUniform(const char* name, const math::Vector4f& values) const
+	{
+		glUniform4f(
+			glGetUniformLocation(m_id, name),
+			values.GetX(), values.GetY(),
+			values.GetZ(), values.GetW()
+		);
+	}
+
+	void Shader::SetUniform(const char* name, float val1, float val2, float val3) const
+	{
+		glUniform3f(glGetUniformLocation(m_id, name), val1, val2, val3);
+	}
+
+	void Shader::SetUniform(const char* name, int val1, int val2, int val3) const
+	{
+		glUniform3i(glGetUniformLocation(m_id, name), val1, val2, val3);
+	}
+
+
+	void Shader::SetUniform(const char* name, const math::Matrix3f& matrix) const
+	{
+		glUniformMatrix3fv
+		(
+			glGetUniformLocation(m_id, name),
+			1, GL_FALSE, reinterpret_cast<const float*>(&matrix)
+		);
+	}
+
+	void Shader::SetUniform(const char* name, const math::Matrix4f& matrix) const
+	{
+		glUniformMatrix4fv
+		(
+			glGetUniformLocation(m_id, name),
+			1, GL_FALSE, reinterpret_cast<const float*>(&matrix)
+		);
+	}
 
 	bool Shader::CompileSource(const char* shaderSource, GLenum type)
 	{
@@ -166,4 +228,5 @@ namespace ion
 
 		return "Unknown shader type";
 	}
+
 }
