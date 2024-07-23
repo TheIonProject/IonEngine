@@ -11,8 +11,11 @@ namespace ion
     {
         int32_t     index = static_cast<int32_t>(m_entities.size());
 
-        return m_entities.emplace_back(index);
+        Entity& entity = m_entities.emplace_back(index);
 
+        SmartRef<Entity>::RefreshAll();
+
+        return entity;
     }
 
 
@@ -29,6 +32,10 @@ namespace ion
     {
         int32_t     index = static_cast<int32_t>(m_entities.size());
 
-        return m_entities.emplace_back(index, parent.Index());
+        Entity& entity = m_entities.emplace_back(index, parent.Index());
+
+        SmartRef<Entity>::RefreshAll();
+
+        return entity;
     }
 }

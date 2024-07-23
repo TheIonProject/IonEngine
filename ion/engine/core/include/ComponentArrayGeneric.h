@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ComponentGeneric.h"
+#include "Entity.h"
 
 namespace ion
 {
@@ -96,6 +97,10 @@ namespace ion
 	template<typename ...Args>
 	inline TComponentType& ComponentArray<TComponentType>::EmplaceBack(Args ...args)
 	{
-		return m_components.emplace_back(args...).Data();
+		TComponentType& component = m_components.emplace_back(args...).Data();
+
+		SmartRef<TComponentType>::RefreshAll();
+
+		return component;
 	}
 }
