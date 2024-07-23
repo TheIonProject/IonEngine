@@ -30,9 +30,13 @@ namespace ion
 		template <CComponent TComponentType> inline  static
 		TComponentType& GetComponentFromIndex(int32_t index);
 
+		template <CComponent TComponentType> inline  static
+		int32_t	GetEntityComponentIndex(int32_t entityIndex);
+
 
 		template <CComponent TComponentType> inline static
 		TComponentType& GetEntityComponent(const Entity& entity);
+
 
 		static Entity& GetEntity(int32_t index);
 
@@ -78,6 +82,12 @@ namespace ion
 	inline Transform& EntityManager::GetComponentFromIndex(int32_t index)
 	{
 		return m_transformArray.GetComponentFromIndex(index);
+	}
+
+	template<>
+	inline int32_t EntityManager::GetEntityComponentIndex<Transform>(int32_t entityIndex)
+	{
+		return m_transformArray.GetEntityComponentIndex(entityIndex);
 	}
 
 	template<>
