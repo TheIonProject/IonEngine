@@ -51,6 +51,7 @@ namespace ion
 		TValueType		m_data;
 		int32_t			m_parentComponent = -1;
 		int32_t			m_entity = 0;
+		bool			m_enabled = false;
 	};
 
 
