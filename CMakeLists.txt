@@ -23,9 +23,49 @@ cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+
+file(MAKE_DIRECTORY lib)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/lib)
+
+set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/pdb)
+set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/pdb)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/lib)
+
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
+
 # Solution name
 project(IonEngine)
 
+if(MSVC)
+	add_link_options(/IGNORE:4099)
+endif()
 
-# Folder containing project files
-add_subdirectory(ion)
+
+include(FetchContent)
+
+FetchContent_Declare(
+	mathlib
+	GIT_REPOSITORY			https://github.com/torrra/mathlib		# Fetch our math library from github
+	GIT_TAG					main									# Get main branch
+	GIT_SHALLOW				ON										# Allow branch names as GIT_TAG argument
+)
+
+
+# Ensure mathlib is populated
+FetchContent_MakeAvailable(mathlib)
+
+
+add_subdirectory(dependencies)
+
+add_subdirectory(resources)
+add_subdirectory(renderer)
+add_subdirectory(ECS)
+add_subdirectory(editor)
+
+if (MSVC)
+	set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT editor)
+endif()

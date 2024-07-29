@@ -17,7 +17,7 @@
 *.dll
 
 # Build results
-[Bb]uild/*
+*[Bb]uild/*
 ![Bb]uild/assets
 
 # Executables
